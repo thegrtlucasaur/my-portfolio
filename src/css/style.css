@@ -231,7 +231,7 @@ ul, ol {
   width: 100%;
   height: 100%;
   height: 100dvh;
-  background: transparent;
+  background: var(--color-background);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,7 +275,9 @@ ul, ol {
 .loader-transition-block {
   z-index: 1;
   background: var(--color-background);
-  transform: translateY(0);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -1px 0 0 var(--color-border);
+  transform: translateY(102%);
 }
 
 /* Exit reveal animation triggered upon initial readiness */
@@ -288,7 +290,7 @@ ul, ol {
 }
 
 .loader.is-loaded .loader-transition-block {
-  animation: loader-curtain-block 0.65s var(--ease-transition) forwards;
+  animation: loader-block 0.65s var(--ease-transition) forwards;
 }
 
 @keyframes loader-counter {
@@ -297,17 +299,17 @@ ul, ol {
     opacity: 1;
   }
   100% {
-    transform: translateY(-4.5rem);
+    transform: translateY(-5rem);
     opacity: 0;
   }
 }
 
-@keyframes loader-curtain-block {
+@keyframes loader-block {
   0% {
-    transform: translateY(0);
+    transform: translateY(102%);
   }
   100% {
-    transform: translateY(-102%);
+    transform: translateY(0);
   }
 }
 
@@ -415,15 +417,13 @@ body.is-loading {
   transform: scaleX(1);
 }
 
-/* Progressive Reveal Keyframes */
-@keyframes editorial-reveal {
-  0% {
-    transform: translateY(102%);
-    opacity: 0;
+/* Matthieu Givelet Upward Reveal Keyframe */
+@keyframes txt-in {
+  from {
+    transform: translateY(105%);
   }
-  100% {
+  to {
     transform: translateY(0);
-    opacity: 1;
   }
 }
 
@@ -437,36 +437,34 @@ body.is-loading {
 }
 
 /* Progressive motion: Active only when html has .has-motion */
-html.has-motion .text-box.is-masking {
+html.has-motion .text-box.is-masking,
+html.has-motion .home-hero-desc-line {
   overflow: hidden;
 }
 
 /* Nav links animate in on page load */
 html.has-motion .nav-in {
-  animation: editorial-reveal 0.9s var(--ease-editorial) var(--stagger-delay, 0s) both;
+  display: inline-block;
+  transform: translateY(105%);
+  animation: txt-in 1.2s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s) both;
 }
 
-/* Home hero display title words and artwork aperture animate on page load */
+/* Home hero display title words and subtitle lines animate on page load */
 html.has-motion .text-in {
-  animation: editorial-reveal 1.1s var(--ease-editorial) var(--stagger-delay, 0s) both;
-}
-
-/* Home hero headline lines animate on page load */
-html.has-motion .home-hero-headline-el {
-  animation: editorial-reveal 1.1s var(--ease-editorial) var(--stagger-delay, 0s) both;
-}
-
-html.has-motion .home-hero-location-el {
-  animation: editorial-reveal 1.1s var(--ease-editorial) var(--stagger-delay, 0s) both;
+  display: inline-block;
+  transform: translateY(105%);
+  animation: txt-in 1.2s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s) both;
 }
 
 /* Elements revealing on scroll */
 html.has-motion .scroll-in.is-revealing {
-  animation: editorial-reveal 1s var(--ease-editorial) var(--stagger-delay, 0s) both;
+  display: inline-block;
+  transform: translateY(105%);
+  animation: txt-in 1.2s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s) both;
 }
 
 html.has-motion .border.is-revealing {
-  animation: border-reveal 1.7s var(--ease-editorial) both;
+  animation: border-reveal 1.7s cubic-bezier(0.18, 0.66, 0.18, 1) 0.5s both;
 }
 
 /* Subtle Page Enter Stagger (Active only when html has .has-motion) */
@@ -712,6 +710,7 @@ button:hover .link-line::before,
   white-space: nowrap;
   pointer-events: auto;
   box-shadow: none;
+  overflow: hidden;
 }
 
 /* 2. Center Label: Floating Navigation for Work / Archive / About */
@@ -734,6 +733,7 @@ button:hover .link-line::before,
   pointer-events: auto;
   box-shadow: none;
   line-height: 1.2;
+  overflow: hidden;
 }
 
 .nav-link {
@@ -748,6 +748,13 @@ button:hover .link-line::before,
   cursor: pointer;
   white-space: nowrap;
   pointer-events: auto;
+  overflow: hidden;
+}
+
+.nav-link-inner {
+  display: inline-flex;
+  align-items: flex-start;
+  line-height: inherit;
 }
 
 .nav-link-label {
@@ -787,6 +794,7 @@ button:hover .link-line::before,
   cursor: pointer;
   pointer-events: auto;
   box-shadow: none;
+  overflow: hidden;
 }
 
 .nav-contact.desktop-el {
@@ -1020,6 +1028,7 @@ button:hover .link-line::before,
   align-items: center;
   text-align: center;
   margin-bottom: 0;
+  perspective: 25vw;
 }
 
 .home-title-display {
@@ -1036,11 +1045,38 @@ button:hover .link-line::before,
   gap: clamp(1rem, 2vw, 2.5rem);
   margin: 0 auto;
   white-space: nowrap;
+  perspective: 25vw;
+}
+
+.home-title-box {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  line-height: inherit;
 }
 
 .home-title-word {
   display: inline-block;
   line-height: inherit;
+}
+
+/* Horizontal settling for title sides (Mark and Bryan) inspired by Matthieu: 1.5s cubic-bezier(.66, 0, .23, 1) */
+html.has-motion .home-title-box-1 {
+  transform: translateX(4vw);
+}
+
+html.has-motion .home-title-box-2 {
+  transform: translateX(-4vw);
+}
+
+html.has-motion .home-title-box-1.is-animated {
+  transform: translateX(0);
+  transition: transform 1.5s cubic-bezier(0.66, 0, 0.23, 1);
+}
+
+html.has-motion .home-title-box-2.is-animated {
+  transform: translateX(0);
+  transition: transform 1.5s cubic-bezier(0.66, 0, 0.23, 1);
 }
 
 .home-title-image-box {
@@ -1057,9 +1093,25 @@ button:hover .link-line::before,
   position: relative;
   background: var(--color-background);
   border: 1px solid var(--color-border);
-  transition: none !important;
 }
 
+/* Initial 3D perspective entrance for hero image box */
+html.has-motion .home-title-image-box {
+  transform-style: preserve-3d;
+  transform-origin: center;
+  transform: scale(1.1) translateX(1.5vw) rotateY(90deg);
+  opacity: 0;
+}
+
+html.has-motion .home-title-image-box.is-animated {
+  opacity: 1;
+  transform: scale(1) translateX(0) rotateY(0deg);
+  transition:
+    transform 1.5s cubic-bezier(0.28, 0.54, 0.39, 1),
+    opacity 0.9s ease 0.1s;
+}
+
+/* Hero image itself: strictly instant swap, no transition or scale */
 .home-title-image {
   width: 100%;
   height: 100%;
@@ -1093,8 +1145,9 @@ button:hover .link-line::before,
   letter-spacing: -0.02em;
 }
 
-.desktop-br {
-  display: inline;
+.home-hero-desc-line {
+  display: block;
+  overflow: hidden;
 }
 
 .home-hero-location {
@@ -1106,6 +1159,7 @@ button:hover .link-line::before,
   font-weight: 400;
   margin-top: clamp(0.85rem, 1.3vw, 1.5rem);
   text-align: center;
+  overflow: hidden;
 }
 
 /* 3. Transition into Approach Row — full-width divider spanning page edge-to-edge */
@@ -1246,6 +1300,14 @@ button:hover .link-line::before,
     width: clamp(4.2rem, 18vw, 5.8rem);
     height: clamp(3rem, 12.5vw, 4.2rem);
     margin: 0;
+  }
+
+  html.has-motion .home-title-box-1 {
+    transform: translateX(3vw);
+  }
+
+  html.has-motion .home-title-box-2 {
+    transform: translateX(-3vw);
   }
 
   .home-hero-desc-wrapper {
@@ -2565,7 +2627,10 @@ button:hover .link-line::before,
 
   .text-in,
   .scroll-in,
-  .nav-in {
+  .nav-in,
+  .home-title-box-1,
+  .home-title-box-2,
+  .home-title-image-box {
     transform: none !important;
     opacity: 1 !important;
     visibility: visible !important;

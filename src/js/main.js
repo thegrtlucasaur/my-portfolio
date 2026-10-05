@@ -155,6 +155,12 @@ export function setRouteImmediate(targetRoute) {
   currentRoute = targetRoute;
   if (targetRoute === 'home') {
     if (!isInitialLoading) {
+      const box1 = document.querySelector('.home-title-box-1');
+      const box2 = document.querySelector('.home-title-box-2');
+      const imageBox = document.querySelector('.home-title-image-box');
+      if (box1) box1.classList.add('is-animated');
+      if (box2) box2.classList.add('is-animated');
+      if (imageBox) imageBox.classList.add('is-animated');
       startHeroCycle();
     }
   } else {
@@ -226,6 +232,12 @@ export function navigateTo(targetRoute, updateHistory = true) {
     window.scrollTo(0, 0);
 
     if (targetRoute === 'home') {
+      const box1 = document.querySelector('.home-title-box-1');
+      const box2 = document.querySelector('.home-title-box-2');
+      const imageBox = document.querySelector('.home-title-image-box');
+      if (box1) box1.classList.add('is-animated');
+      if (box2) box2.classList.add('is-animated');
+      if (imageBox) imageBox.classList.add('is-animated');
       startHeroCycle();
     } else {
       stopHeroCycle();
@@ -1453,45 +1465,91 @@ export async function init() {
     if (loader) loader.remove();
     document.body.classList.remove('is-loading');
     setupScrollAnimations();
+    const box1 = document.querySelector('.home-title-box-1');
+    const box2 = document.querySelector('.home-title-box-2');
+    const imageBox = document.querySelector('.home-title-image-box');
+    if (box1) box1.classList.add('is-animated');
+    if (box2) box2.classList.add('is-animated');
+    if (imageBox) imageBox.classList.add('is-animated');
     if (initialRoute === 'home') {
       startHeroCycle();
     }
     return;
   }
 
-  // Await genuine initial page readiness (fonts + critical initial asset + progress tracking to 100%)
+  // Await genuine initial page readiness (fonts + critical initial asset + progress tracking to 100% + hold)
   await waitForInitialReadiness(initialRoute, tracker);
 
-  // Trigger exit curtain animation
-  requestAnimationFrame(() => {
+  // Trigger solid transition block vertical entry (translateY(102%) -> translateY(0))
+  loader.classList.add('is-loaded');
+
+  const transitionDuration = 650; // matches 0.65s var(--ease-transition)
+
+  let cleanedUp = false;
+  const cleanUpLoader = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    if (tracker && tracker.destroy) {
+      tracker.destroy();
+    }
+    if (loader && loader.parentNode) {
+      loader.remove();
+    }
+    document.body.classList.remove('is-loading');
     isInitialLoading = false;
-    loader.classList.add('is-loaded');
+
+    // Enable motion & trigger upward reveals and home intro sequence
+    document.documentElement.classList.add('has-motion');
     setupScrollAnimations();
+
     if (initialRoute === 'home') {
-      startHeroCycle();
+      triggerHomeIntroSequence();
     }
+  };
 
-    let cleanedUp = false;
-    const cleanUpLoader = () => {
-      if (cleanedUp) return;
-      cleanedUp = true;
-      if (tracker && tracker.destroy) {
-        tracker.destroy();
-      }
-      if (loader && loader.parentNode) {
-        loader.remove();
-      }
-      document.body.classList.remove('is-loading');
-    };
+  const curtainBlock = loader.querySelector('.loader-transition-block');
+  if (curtainBlock) {
+    curtainBlock.addEventListener('animationend', cleanUpLoader, { once: true });
+  }
+  setTimeout(cleanUpLoader, transitionDuration + 50);
+}
 
-    const curtainBlock = loader.querySelector('.loader-transition-block');
-    if (curtainBlock) {
-      curtainBlock.addEventListener('animationend', cleanUpLoader, { once: true });
-    } else {
-      loader.addEventListener('animationend', cleanUpLoader, { once: true });
-    }
-    setTimeout(cleanUpLoader, 750);
+/**
+ * Choreographed Post-Preloader Home Entrance inspired by Matthieu Givelet:
+ * - Upward text reveal (.txt-in) from below clipping area: 1.2s cubic-bezier(.18, .66, .18, 1)
+ * - Horizontal settling for title sides (Mark and Bryan): 1.5s cubic-bezier(.66, 0, .23, 1)
+ * - 3D perspective entrance for hero image box: 1.5s cubic-bezier(.28, .54, .39, 1)
+ * - Staggered navbar and supporting content entrance
+ * - Automatic 1500ms hero image cycling resumes once initial entrance settles
+ */
+export function triggerHomeIntroSequence() {
+  const box1 = document.querySelector('.home-title-box-1');
+  const box2 = document.querySelector('.home-title-box-2');
+  const imageBox = document.querySelector('.home-title-image-box');
+  const border = document.querySelector('.home-hero .border') || document.querySelector('.infos-box .border');
+
+  if (border) {
+    border.classList.add('is-revealing');
+  }
+
+  // Force reflow
+  void document.body.offsetWidth;
+
+  // Stagger horizontal settling for title sides
+  requestAnimationFrame(() => {
+    if (box1) box1.classList.add('is-animated');
+    if (box2) box2.classList.add('is-animated');
   });
+
+  // Stagger 3D perspective flip for hero image container
+  setTimeout(() => {
+    if (imageBox) imageBox.classList.add('is-animated');
+  }, 250);
+
+  // Resume normal automatic image cycling after initial entrance finishes (1600ms)
+  setTimeout(() => {
+    startHeroCycle();
+  }, 1600);
 }
 
 if (typeof document !== 'undefined') {

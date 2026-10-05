@@ -57,29 +57,35 @@
     <nav class="navbar" aria-label="Site Navigation">
       <!-- 1. Left Label: Identity -->
       <a href="/" class="nav-logo anchor" data-route="home" aria-label="©thegrtlucas - Home">
-        <span class="link-line">©thegrtlucas</span>
+        <span class="link-line nav-in" style="--stagger-delay: 0s;">©thegrtlucas</span>
       </a>
 
       <!-- 2. Center Label: Shared White Container for Work / Archive / About -->
       <div class="nav-links-wrapper desktop-el" aria-label="Primary navigation">
         <div class="nav-links-box">
           <a href="/work" class="nav-link anchor" data-route="work">
-            <span class="nav-link-label link-line">Work</span>
-            <span class="nav-link-count" aria-label="8 projects">(8)</span>
+            <span class="nav-link-inner nav-in" style="--stagger-delay: 0.05s;">
+              <span class="nav-link-label link-line">Work</span>
+              <span class="nav-link-count" aria-label="8 projects">(8)</span>
+            </span>
           </a>
           <a href="/archive" class="nav-link anchor" data-route="archive">
-            <span class="nav-link-label link-line">Archive</span>
-            <span class="nav-link-count" aria-label="16 archived projects">(16)</span>
+            <span class="nav-link-inner nav-in" style="--stagger-delay: 0.1s;">
+              <span class="nav-link-label link-line">Archive</span>
+              <span class="nav-link-count" aria-label="16 archived projects">(16)</span>
+            </span>
           </a>
           <a href="/about" class="nav-link anchor" data-route="about">
-            <span class="nav-link-label link-line">About</span>
+            <span class="nav-link-inner nav-in" style="--stagger-delay: 0.15s;">
+              <span class="nav-link-label link-line">About</span>
+            </span>
           </a>
         </div>
       </div>
 
       <!-- 3. Right Label: Get in touch ↗ linking to mailto:markbryanlucas05@gmail.com -->
       <a href="mailto:markbryanlucas05@gmail.com" class="nav-contact desktop-el" aria-label="Get in touch via email">
-        <span class="link-line">Get in touch ↗</span>
+        <span class="link-line nav-in" style="--stagger-delay: 0.2s;">Get in touch ↗</span>
       </a>
 
       <!-- Mobile Menu Toggle Button (White rectangular label) -->
@@ -141,8 +147,10 @@
           <!-- 1. Enormous Split Display Title with Embedded Artwork Aperture -->
           <div class="home-hero-display-wrap">
             <h1 class="home-title-display text-box is-masking">
-              <span class="home-title-word text-in" style="--stagger-delay: 0.06s;">Mark</span>
-              <span class="home-title-image-box text-in" id="heroTitleImageBox" style="--stagger-delay: 0.14s;" aria-label="Mark Bryan - Featured poster preview">
+              <span class="home-title-box home-title-box-1">
+                <span class="home-title-word text-in" style="--stagger-delay: 0.08s;">Mark</span>
+              </span>
+              <span class="home-title-image-box" id="heroTitleImageBox" aria-label="Mark Bryan - Featured poster preview">
                 <img
                   src="/assets/posters/featured/oh-yeah-steve-lacy.webp"
                   alt="Mark Bryan - Featured poster design"
@@ -154,21 +162,27 @@
                   decoding="async"
                 />
               </span>
-              <span class="home-title-word text-in" style="--stagger-delay: 0.22s;">Bryan</span>
+              <span class="home-title-box home-title-box-2">
+                <span class="home-title-word text-in" style="--stagger-delay: 0.22s;">Bryan</span>
+              </span>
             </h1>
           </div>
 
           <!-- 2. Large Centered Editorial Subtitle & Context Tag -->
-          <div class="home-hero-desc-wrapper scroll-in-group">
-            <p class="home-hero-description text-box">
-              <span class="scroll-in">
-                Graphic designer and videographer<br class="desktop-br">
-                creating posters, visual identities, digital content,<br class="desktop-br">
-                and films that bring ideas to life.
+          <div class="home-hero-desc-wrapper">
+            <div class="home-hero-description">
+              <span class="home-hero-desc-line text-box">
+                <span class="text-in" style="--stagger-delay: 0.32s;">Graphic designer and videographer</span>
               </span>
-            </p>
+              <span class="home-hero-desc-line text-box">
+                <span class="text-in" style="--stagger-delay: 0.42s;">creating posters, visual identities, digital content,</span>
+              </span>
+              <span class="home-hero-desc-line text-box">
+                <span class="text-in" style="--stagger-delay: 0.52s;">and films that bring ideas to life.</span>
+              </span>
+            </div>
             <p class="home-hero-location text-box">
-              <span class="scroll-in">[ Albay, Philippines ]</span>
+              <span class="text-in" style="--stagger-delay: 0.62s;">[ Albay, Philippines ]</span>
             </p>
           </div>
 
