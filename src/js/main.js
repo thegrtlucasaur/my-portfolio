@@ -1,0 +1,1243 @@
+/**
+ * Portfolio Main JavaScript Entrypoint
+ * Minimal Neutral Editorial Architecture inspired by Matthieu Givelet
+ * Palette: #FFFFFF | #000000 | rgba(0,0,0,0.10) | rgba(0,0,0,0.45)
+ */
+
+// ============================================================================
+// 1. DATA SOURCE: POSTER PROJECTS & EDITORIAL ARCHIVE
+// ============================================================================
+
+export const projects = [
+  {
+    id: 'oh-yeah',
+    title: 'oh yeah?',
+    category: 'Poster Design',
+    artist: 'Steve Lacy',
+    year: '2026',
+    image: '/assets/posters/featured/oh-yeah-steve-lacy.webp',
+    fullImage: '/assets/posters/featured/oh-yeah-steve-lacy-full.webp',
+    originalImage: '/assets/posters/featured/oh-yeah-steve-lacy.png',
+    aspect: '4/5',
+    featured: true,
+    alt: 'oh yeah? - Steve Lacy poster design (2026)'
+  },
+  {
+    id: 'multo',
+    title: 'Multo',
+    category: 'Poster Design',
+    artist: 'Cup of Joe',
+    year: '2025',
+    image: '/assets/posters/featured/Multo.webp',
+    fullImage: '/assets/posters/featured/Multo-full.webp',
+    originalImage: '/assets/posters/featured/Multo.png',
+    aspect: '3/4',
+    featured: false,
+    alt: 'Multo - Cup of Joe poster design (2025)'
+  },
+  {
+    id: 'undressed',
+    title: 'Undressed',
+    category: 'Poster Design',
+    artist: 'Sombr',
+    year: '2025',
+    image: '/assets/posters/featured/undressed.webp',
+    fullImage: '/assets/posters/featured/undressed-full.webp',
+    originalImage: '/assets/posters/featured/undressed.png',
+    aspect: '3/4',
+    featured: true,
+    alt: 'Undressed - Sombr poster design (2025)'
+  },
+  {
+    id: 'captcha',
+    title: 'captcha',
+    category: 'Poster Design',
+    // Artist intentionally omitted: do NOT display "None", "N/A", etc.
+    year: '2025',
+    image: '/assets/posters/featured/captcha.webp',
+    fullImage: '/assets/posters/featured/captcha-full.webp',
+    originalImage: '/assets/posters/featured/captcha.png',
+    aspect: '3/4',
+    featured: false,
+    alt: 'captcha - Poster design (2025)'
+  },
+  {
+    id: 'its-loss',
+    title: 'its it loss?',
+    category: 'Poster Design',
+    // Artist intentionally omitted
+    year: '2025',
+    image: '/assets/posters/featured/it%20it%20loss%3F.webp',
+    fullImage: '/assets/posters/featured/it%20it%20loss%3F-full.webp',
+    originalImage: '/assets/posters/featured/it%20it%20loss%3F.png',
+    aspect: '3/4',
+    featured: false,
+    alt: 'its it loss? - Poster design (2025)'
+  },
+  {
+    id: 'protected-content',
+    title: 'protected content',
+    category: 'Poster Design',
+    // Artist intentionally omitted
+    year: '2025',
+    image: '/assets/posters/featured/protected%20content.webp',
+    fullImage: '/assets/posters/featured/protected%20content-full.webp',
+    originalImage: '/assets/posters/featured/protected%20content.png',
+    aspect: '3/4',
+    featured: false,
+    alt: 'protected content - Poster design (2025)'
+  }
+];
+
+// Configurable Featured Project Selection on Home
+// Can easily be changed at any time by updating this array
+export const featuredProjectIds = ['oh-yeah', 'undressed'];
+
+export function getFeaturedProjects() {
+  return projects.filter(p => featuredProjectIds.includes(p.id));
+}
+
+// ============================================================================
+// 2. EDITORIAL SPA ROUTER & CURTAIN TRANSITION
+// ============================================================================
+
+let currentRoute = 'home';
+let isTransitioning = false;
+
+const routes = {
+  '/': 'home',
+  '/home': 'home',
+  '/work': 'work',
+  '/archive': 'archive',
+  '/about': 'about',
+  '/contact': 'contact'
+};
+
+/**
+ * Normalizes browser path or hash to route token
+ */
+function resolveRouteFromLocation() {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  if (hash && ['home', 'work', 'archive', 'about', 'contact'].includes(hash)) {
+    return hash;
+  }
+
+  const path = window.location.pathname.replace(/\/$/, '') || '/';
+  if (routes[path]) return routes[path];
+
+  return 'home';
+}
+
+/**
+ * Sets the active route immediately without animation (used on initial page load)
+ */
+export function setRouteImmediate(targetRoute) {
+  const validRoutes = ['home', 'work', 'archive', 'about', 'contact'];
+  if (!validRoutes.includes(targetRoute)) {
+    targetRoute = 'home';
+  }
+
+  document.querySelectorAll('.view-section').forEach(section => {
+    section.classList.remove('is-active', 'page-entering');
+  });
+
+  const activeSection = document.getElementById(`view-${targetRoute}`);
+  if (activeSection) {
+    activeSection.classList.add('is-active', 'page-entering');
+  }
+
+  document.querySelectorAll('[data-route]').forEach(link => {
+    const linkRoute = link.getAttribute('data-route');
+    link.classList.toggle('is-active', linkRoute === targetRoute);
+  });
+
+  currentRoute = targetRoute;
+  if (targetRoute === 'home') {
+    startHeroCycle();
+  } else {
+    stopHeroCycle();
+  }
+  if (targetRoute === 'archive') {
+    setupArchiveHover();
+  }
+  if (targetRoute === 'about') {
+    lastAppliedProgress = null;
+    lastAppliedScale = null;
+    updateAboutMetrics();
+    updateAboutPhotoScale();
+  }
+  setupScrollAnimations();
+}
+
+/**
+ * Triggers the two-layer neutral curtain transition and switches views
+ */
+export function navigateTo(targetRoute, updateHistory = true) {
+  if (isTransitioning) return;
+  if (targetRoute === currentRoute) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    closeMobileDrawer();
+    return;
+  }
+
+  const validRoutes = ['home', 'work', 'archive', 'about', 'contact'];
+  if (!validRoutes.includes(targetRoute)) {
+    targetRoute = 'home';
+  }
+
+  isTransitioning = true;
+  closeMobileDrawer();
+
+  const overlay = document.getElementById('transitionOverlay');
+  const curtainBlock = overlay?.querySelector('.transition-block');
+  const curtainBack = overlay?.querySelector('.transition-back');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (updateHistory) {
+    const targetUrl = targetRoute === 'home' ? '/' : `/${targetRoute}`;
+    window.history.pushState({ route: targetRoute }, '', targetUrl);
+  }
+
+  const switchViews = () => {
+    // Hide all views and show target
+    document.querySelectorAll('.view-section').forEach(section => {
+      section.classList.remove('is-active', 'page-entering');
+    });
+
+    const activeSection = document.getElementById(`view-${targetRoute}`);
+    if (activeSection) {
+      activeSection.classList.add('is-active');
+      void activeSection.offsetWidth; // Force reflow for subtle stagger animation
+      activeSection.classList.add('page-entering');
+    }
+
+    // Update navigation active states
+    document.querySelectorAll('[data-route]').forEach(link => {
+      const linkRoute = link.getAttribute('data-route');
+      link.classList.toggle('is-active', linkRoute === targetRoute);
+    });
+
+    currentRoute = targetRoute;
+    window.scrollTo(0, 0);
+
+    if (targetRoute === 'home') {
+      startHeroCycle();
+    } else {
+      stopHeroCycle();
+    }
+
+    // Refresh dynamic components if needed
+    if (targetRoute === 'archive') {
+      setupArchiveHover();
+    }
+    if (targetRoute === 'about') {
+      lastAppliedProgress = null;
+      lastAppliedScale = null;
+      updateAboutMetrics();
+      updateAboutPhotoScale();
+    }
+
+    setupScrollAnimations();
+  };
+
+  if (prefersReduced || !overlay) {
+    switchViews();
+    isTransitioning = false;
+    return;
+  }
+
+  // Two-layer curtain animation:
+  // Step 1: Curtain slides in from bottom, backdrop fades in (450ms)
+  overlay.classList.add('transition');
+  curtainBlock?.classList.remove('transition-out');
+  curtainBack?.classList.remove('transition-out');
+  curtainBlock?.classList.add('transition-in');
+  curtainBack?.classList.add('transition-active');
+
+  setTimeout(() => {
+    // Step 2: Screen is covered. Switch view and reset scroll.
+    switchViews();
+
+    // Step 3: Curtain slides up and away, uncovering new page (450ms)
+    curtainBlock?.classList.remove('transition-in');
+    curtainBack?.classList.remove('transition-active');
+    curtainBlock?.classList.add('transition-out');
+    curtainBack?.classList.add('transition-out');
+
+    setTimeout(() => {
+      overlay.classList.remove('transition');
+      curtainBlock?.classList.remove('transition-out');
+      curtainBack?.classList.remove('transition-out');
+      isTransitioning = false;
+      if (targetRoute === 'about') {
+        lastAppliedProgress = null;
+        lastAppliedScale = null;
+        updateAboutMetrics();
+        updateAboutPhotoScale();
+      }
+    }, 450);
+  }, 450);
+}
+
+/**
+ * Sets up global click delegation for editorial router links
+ */
+function setupRouterListeners() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[data-route]');
+    if (!link) return;
+
+    if (
+      link.target === '_blank' ||
+      link.hasAttribute('download') ||
+      link.getAttribute('rel')?.includes('external')
+    ) {
+      return;
+    }
+
+    e.preventDefault();
+    const route = link.getAttribute('data-route');
+    navigateTo(route);
+  });
+
+  window.addEventListener('popstate', (e) => {
+    const route = e.state?.route || resolveRouteFromLocation();
+    navigateTo(route, false);
+  });
+
+  window.addEventListener('hashchange', () => {
+    const route = resolveRouteFromLocation();
+    navigateTo(route, false);
+  });
+}
+
+// ============================================================================
+// 3. COMPONENT RENDERERS (HOME, WORK, ARCHIVE)
+// ============================================================================
+
+/**
+ * Renders configurable featured projects on the Home view
+ * Preserves original poster aspect ratio; subtle scale(1.02) hover without cropping
+ */
+export function renderFeaturedWork() {
+  const container = document.getElementById('homeFeaturedGrid');
+  if (!container) return;
+
+  const featured = getFeaturedProjects();
+  container.innerHTML = '';
+
+  featured.forEach((item, index) => {
+    const card = document.createElement('article');
+    card.className = 'project-card';
+    card.dataset.id = item.id;
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `View poster: ${item.title}`);
+
+    const numStr = String(index + 1).padStart(2, '0');
+    const artistMeta = item.artist ? ` · ${item.artist}` : '';
+    const imgWidth = item.aspect === '4/5' ? 960 : 900;
+    const imgHeight = 1200;
+
+    card.innerHTML = `
+      <div class="project-card-box" style="aspect-ratio: ${item.aspect};">
+        <img 
+          src="${item.image}" 
+          alt="${item.alt}" 
+          class="project-card-image"
+          width="${imgWidth}"
+          height="${imgHeight}"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      <div class="project-card-title-box">
+        <div class="project-card-meta-left">
+          <span class="project-card-title-number">${numStr}</span>
+          <span class="project-card-title"><span class="link-line">${item.title}</span></span>
+        </div>
+        <div class="project-card-meta-right">
+          <span class="project-card-year">${item.year}${artistMeta}</span>
+          <span class="project-card-arrow" aria-hidden="true">&rarr;</span>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => openLightbox(item));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(item);
+      }
+    });
+
+    container.appendChild(card);
+  });
+}
+
+/**
+ * Renders the full curated Work poster gallery
+ * Preserves original poster aspect ratio; subtle scale(1.02) hover without cropping
+ */
+export function renderWorkPage() {
+  const container = document.getElementById('workGalleryGrid');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  projects.forEach((item, index) => {
+    const card = document.createElement('article');
+    card.className = 'project-card stagger-el';
+    card.style.setProperty('--stagger-delay', `${index * 0.05}s`);
+    card.dataset.id = item.id;
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `View poster: ${item.title}`);
+
+    const numStr = String(index + 1).padStart(2, '0');
+    const imgWidth = item.aspect === '4/5' ? 960 : 900;
+    const imgHeight = 1200;
+
+    card.innerHTML = `
+      <div class="project-card-box" style="aspect-ratio: ${item.aspect};">
+        <img 
+          src="${item.image}" 
+          alt="${item.alt}" 
+          class="project-card-image"
+          width="${imgWidth}"
+          height="${imgHeight}"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="project-card-meta">
+        <div class="project-card-meta-left">
+          <div class="project-card-title-row">
+            <span class="project-card-number">${numStr}</span>
+            <h2 class="project-card-title"><span class="link-line">${item.title}</span></h2>
+          </div>
+          <span class="project-card-category">${item.category}</span>
+        </div>
+        <div class="project-card-meta-right">
+          ${item.artist ? `<span class="project-card-artist">${item.artist}</span>` : ''}
+          <div class="project-card-year-row">
+            <span class="project-card-year">${item.year}</span>
+            <span class="project-card-arrow" aria-hidden="true">&rarr;</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => openLightbox(item));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(item);
+      }
+    });
+
+    container.appendChild(card);
+  });
+}
+
+/**
+ * Renders the tabular Archive index
+ * Strict Rule: For items without artist information, Detail is left empty.
+ */
+export function renderArchivePage() {
+  const container = document.getElementById('archiveList');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  projects.forEach((item, index) => {
+    const row = document.createElement('div');
+    row.className = 'archive-list-el stagger-el';
+    row.style.setProperty('--stagger-delay', `${index * 0.03}s`);
+    row.dataset.id = item.id;
+    row.dataset.preview = item.image;
+    row.tabIndex = 0;
+    row.setAttribute('role', 'button');
+    row.setAttribute('aria-label', `Poster project: ${item.title}`);
+
+    const numStr = String(index + 1).padStart(2, '0');
+    // For missing artist, display completely empty string — no "None", "N/A", or "Unknown"
+    const artistText = item.artist ? item.artist : '';
+
+    row.innerHTML = `
+      <div class="archive-list-text">
+        <div class="archive-name">
+          <div class="archive-mobile-thumb-wrap">
+            <img 
+              src="${item.image}" 
+              alt="${item.title}" 
+              class="archive-mobile-thumb" 
+              loading="lazy" 
+              decoding="async" 
+            />
+            <span class="archive-num">${numStr}</span>
+            <span class="archive-title">${item.title}</span>
+          </div>
+        </div>
+        <div class="archive-detail">${artistText}</div>
+        <div class="archive-date list-last-el">${item.year}</div>
+      </div>
+    `;
+
+    row.addEventListener('click', () => openLightbox(item));
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(item);
+      }
+    });
+
+    container.appendChild(row);
+  });
+}
+
+// ============================================================================
+// 4. DESKTOP ARCHIVE FLOATING HOVER PREVIEW
+// Follows cursor smoothly within viewport bounds
+// ============================================================================
+
+export function setupArchiveHover() {
+  const previewBox = document.getElementById('archiveFloatingPreview');
+  const previewImg = document.getElementById('archiveFloatingImg');
+  const archiveRows = document.querySelectorAll('.archive-list-el');
+
+  if (!previewBox || !previewImg || !archiveRows.length) return;
+
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  if (!finePointer.matches) return;
+
+  let activeRow = null;
+  let mouseX = -999;
+  let mouseY = -999;
+  let isMoving = false;
+
+  function updatePreviewPosition() {
+    isMoving = false;
+    if (!activeRow) return;
+
+    const offset = 24;
+    const boxW = 220;
+    const boxH = 290;
+
+    let posX = mouseX + offset;
+    let posY = mouseY - (boxH / 2);
+
+    // Viewport right edge overflow
+    if (posX + boxW > window.innerWidth - 20) {
+      posX = mouseX - boxW - offset;
+    }
+
+    // Viewport top/bottom overflow
+    posX = Math.max(16, Math.min(posX, window.innerWidth - boxW - 16));
+    posY = Math.max(16, Math.min(posY, window.innerHeight - boxH - 16));
+
+    previewBox.style.transform = `translate3d(${Math.round(posX)}px, ${Math.round(posY)}px, 0)`;
+  }
+
+  archiveRows.forEach(row => {
+    row.addEventListener('mouseenter', (e) => {
+      if (!finePointer.matches) return;
+      activeRow = row;
+      row.classList.add('is-hover');
+      const imgSrc = row.dataset.preview;
+      if (imgSrc && previewImg.src !== imgSrc) {
+        previewImg.src = imgSrc;
+      }
+      previewBox.classList.add('is-active');
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      updatePreviewPosition();
+    });
+
+    row.addEventListener('mousemove', (e) => {
+      if (!finePointer.matches || !activeRow) return;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!isMoving) {
+        isMoving = true;
+        requestAnimationFrame(updatePreviewPosition);
+      }
+    });
+
+    row.addEventListener('mouseleave', () => {
+      row.classList.remove('is-hover');
+      activeRow = null;
+      previewBox.classList.remove('is-active');
+    });
+  });
+
+  window.addEventListener('scroll', () => {
+    activeRow = null;
+    previewBox.classList.remove('is-active');
+    document.querySelectorAll('.archive-list-el.is-hover').forEach(el => el.classList.remove('is-hover'));
+  }, { passive: true });
+}
+
+// ============================================================================
+// 5. SCROLL-BASED REVEALS & HAIRLINE BORDERS (Inspired by Matthieu Givelet)
+// ============================================================================
+
+export function setupScrollAnimations() {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) {
+    document.documentElement.classList.remove('has-motion');
+    return;
+  }
+
+  document.documentElement.classList.add('has-motion');
+
+  const groups = document.querySelectorAll('.scroll-in-group');
+  const borders = document.querySelectorAll('.border');
+
+  function revealGroup(group) {
+    group.classList.add('is-animating');
+    group.querySelectorAll('.scroll-in').forEach((el, index) => {
+      el.style.setProperty('--stagger-delay', `${index * 0.08}s`);
+      el.classList.add('is-revealing');
+    });
+  }
+
+  function revealBorder(border) {
+    border.classList.add('is-revealing');
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+
+      if (entry.target.classList.contains('scroll-in-group')) {
+        revealGroup(entry.target);
+      } else if (entry.target.classList.contains('border')) {
+        revealBorder(entry.target);
+      }
+
+      observer.unobserve(entry.target);
+    });
+  }, {
+    threshold: 0.05,
+    rootMargin: '0px 0px 80px 0px'
+  });
+
+  groups.forEach((group) => {
+    // If element is already in viewport or near top, reveal immediately!
+    const rect = group.getBoundingClientRect();
+    if (rect.top < window.innerHeight + 50 && rect.bottom > -50) {
+      revealGroup(group);
+    } else {
+      observer.observe(group);
+    }
+  });
+
+  borders.forEach((border) => {
+    const rect = border.getBoundingClientRect();
+    if (rect.top < window.innerHeight + 50 && rect.bottom > -50) {
+      revealBorder(border);
+    } else {
+      observer.observe(border);
+    }
+  });
+
+  // Fail-Safe Fallback: after 350ms, guarantee all elements in active view are fully visible!
+  setTimeout(() => {
+    document.querySelectorAll('.view-section.is-active .scroll-in-group').forEach(revealGroup);
+    document.querySelectorAll('.view-section.is-active .border').forEach(revealBorder);
+  }, 350);
+}
+
+// ============================================================================
+// 6. FULL-RESOLUTION WEBP LIGHTBOX MODAL
+// ============================================================================
+
+let lastActiveElement = null;
+
+export function openLightbox(project) {
+  const lightbox = document.getElementById('projectLightbox');
+  const img = document.getElementById('lightboxImg');
+  const closeBtn = document.getElementById('lightboxCloseBtn');
+
+  if (!lightbox || !img || !project) return;
+
+  lastActiveElement = document.activeElement;
+
+  const fullSource = project.fullImage || project.image || '';
+  img.src = fullSource;
+  img.alt = project.alt || project.title || 'Project poster';
+
+  if (project.originalImage) {
+    img.dataset.original = project.originalImage;
+  }
+
+  lightbox.classList.add('is-open');
+  lightbox.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+
+  if (closeBtn) {
+    requestAnimationFrame(() => closeBtn.focus());
+  }
+}
+
+export function closeLightbox() {
+  const lightbox = document.getElementById('projectLightbox');
+  if (!lightbox || !lightbox.classList.contains('is-open')) return;
+
+  lightbox.classList.remove('is-open');
+  lightbox.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+
+  if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
+    lastActiveElement.focus();
+  }
+}
+
+export function setupLightbox() {
+  const lightbox = document.getElementById('projectLightbox');
+  const closeBtn = document.getElementById('lightboxCloseBtn');
+  const backdrop = document.getElementById('lightboxBackdrop');
+
+  if (!lightbox) return;
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeLightbox);
+  }
+  if (backdrop) {
+    backdrop.addEventListener('click', closeLightbox);
+  }
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target === backdrop) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
+      closeLightbox();
+    }
+  });
+}
+
+// ============================================================================
+// 7. MOBILE DRAWER NAVIGATION
+// ============================================================================
+
+export function toggleMobileDrawer() {
+  const drawer = document.getElementById('mobileDrawer');
+  const toggleBtn = document.getElementById('navToggleMobile');
+
+  if (!drawer || !toggleBtn) return;
+
+  const isOpen = drawer.classList.contains('is-open');
+
+  if (isOpen) {
+    closeMobileDrawer();
+  } else {
+    drawer.classList.add('is-open');
+    toggleBtn.classList.add('is-open');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('menu-open');
+  }
+}
+
+export function closeMobileDrawer() {
+  const drawer = document.getElementById('mobileDrawer');
+  const toggleBtn = document.getElementById('navToggleMobile');
+
+  if (!drawer) return;
+
+  drawer.classList.remove('is-open');
+  document.body.classList.remove('menu-open');
+
+  if (toggleBtn) {
+    toggleBtn.classList.remove('is-open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+export function setupMobileNav() {
+  const toggleBtn = document.getElementById('navToggleMobile');
+  const overlay = document.getElementById('mobileDrawerOverlay');
+  const closeBtn = document.getElementById('mobileDrawerCloseBtn');
+  const drawer = document.getElementById('mobileDrawer');
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleMobileDrawer);
+  }
+  if (overlay) {
+    overlay.addEventListener('click', closeMobileDrawer);
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeMobileDrawer);
+  }
+
+  // Ensure any click on links inside mobile drawer closes it
+  if (drawer) {
+    drawer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeMobileDrawer();
+      });
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('menu-open')) {
+      closeMobileDrawer();
+    }
+  });
+}
+
+// ============================================================================
+// 8. CONTACT FORM VALIDATION & SUBMISSION
+// ============================================================================
+
+export function setupContactForm() {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+
+  const fields = [
+    {
+      id: 'name',
+      errorId: 'name-error',
+      validate: (v) => v.trim().length > 0,
+      msg: 'Please provide your name.'
+    },
+    {
+      id: 'email',
+      errorId: 'email-error',
+      validate: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
+      msg: 'Please enter a valid email address.'
+    },
+    {
+      id: 'subject',
+      errorId: 'subject-error',
+      validate: (v) => v.trim().length > 0,
+      msg: 'Please provide a subject.'
+    },
+    {
+      id: 'budget',
+      errorId: 'budget-error',
+      validate: (v) => Boolean(v && v.trim().length > 0),
+      msg: 'Please select an estimated budget tier.'
+    },
+    {
+      id: 'message',
+      errorId: 'message-error',
+      validate: (v) => v.trim().length > 0,
+      msg: 'Please provide project details.'
+    }
+  ];
+
+  fields.forEach(({ id, errorId }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const evt = el.tagName.toLowerCase() === 'select' ? 'change' : 'input';
+    el.addEventListener(evt, () => {
+      const err = document.getElementById(errorId);
+      if (err) err.textContent = '';
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let hasError = false;
+    let firstErr = null;
+
+    fields.forEach(({ id, errorId, validate, msg }) => {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errorId);
+      if (!el) return;
+
+      if (!validate(el.value)) {
+        hasError = true;
+        if (err) err.textContent = msg;
+        if (!firstErr) firstErr = el;
+      } else {
+        if (err) err.textContent = '';
+      }
+    });
+
+    if (hasError) {
+      if (firstErr) firstErr.focus();
+      return;
+    }
+
+    const data = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      subject: document.getElementById('subject').value.trim(),
+      budget: document.getElementById('budget').value,
+      message: document.getElementById('message').value.trim(),
+      submittedAt: new Date().toISOString()
+    };
+
+    console.log('Inquiry submitted:', data);
+
+    const status = document.getElementById('form-status');
+    if (status) {
+      status.className = 'form-status-alert is-success';
+      status.textContent = 'Thank you! Your inquiry has been received.';
+    }
+
+    form.reset();
+  });
+}
+
+// ============================================================================
+// 9. FIGMA-STYLE CUSTOM SVG CURSOR
+// Precise pointer hotspot at (2px, 1.5px), active on fine-pointer desktop
+// ============================================================================
+
+export function setupCustomCursor() {
+  const cursor = document.getElementById('customCursor');
+  if (!cursor) return;
+
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  let isVisible = false;
+
+  function updatePosition(clientX, clientY) {
+    // Hotspot offset: tip of Figma arrow path is at (2px, 1.5px) in 20x22 SVG
+    cursor.style.transform = `translate3d(${clientX - 2}px, ${clientY - 1.5}px, 0)`;
+    if (!isVisible) {
+      cursor.style.opacity = '1';
+      isVisible = true;
+    }
+  }
+
+  window.addEventListener('pointermove', (e) => {
+    if (!finePointer.matches) return;
+    updatePosition(e.clientX, e.clientY);
+  }, { passive: true });
+
+  document.documentElement.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    isVisible = false;
+  });
+
+  document.documentElement.addEventListener('mouseenter', () => {
+    if (finePointer.matches) {
+      cursor.style.opacity = '1';
+      isVisible = true;
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    cursor.style.opacity = '0';
+    isVisible = false;
+  });
+
+  if (typeof finePointer.addEventListener === 'function') {
+    finePointer.addEventListener('change', (e) => {
+      if (!e.matches) {
+        cursor.style.opacity = '0';
+        isVisible = false;
+      }
+    });
+  }
+}
+
+// ----------------------------------------------------------------------------
+// HERO MONOGRAM APERTURE (Timed automatic poster preview within title)
+// Hard-cut instant image swap on a 1500ms timer with zero pointer dependency
+// ----------------------------------------------------------------------------
+
+let heroAutoCycleTimer = null;
+let advanceHeroImage = null;
+
+export function startHeroCycle() {
+  stopHeroCycle();
+  if (typeof window === 'undefined') return;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+  if (typeof advanceHeroImage === 'function') {
+    heroAutoCycleTimer = setInterval(advanceHeroImage, 1500);
+  }
+}
+
+export function stopHeroCycle() {
+  if (heroAutoCycleTimer) {
+    clearInterval(heroAutoCycleTimer);
+    heroAutoCycleTimer = null;
+  }
+}
+
+export function setupHeroMonogram() {
+  const imgEl = document.getElementById('heroTitleImg');
+  if (!imgEl) return;
+
+  const posters = [
+    { src: '/assets/posters/featured/oh-yeah-steve-lacy.webp', alt: 'Mark Bryan - Steve Lacy poster design' },
+    { src: '/assets/posters/featured/undressed.webp', alt: 'Mark Bryan - Undressed poster design' },
+    { src: '/assets/posters/featured/Multo.webp', alt: 'Mark Bryan - Multo poster design' },
+    { src: '/assets/posters/featured/captcha.webp', alt: 'Mark Bryan - Captcha poster design' }
+  ];
+
+  // Preload all poster images immediately to guarantee zero flash or empty frames
+  posters.forEach((p) => {
+    const preloader = new Image();
+    preloader.src = p.src;
+  });
+
+  let currentIndex = 0;
+
+  function switchImage(nextIndex) {
+    currentIndex = nextIndex % posters.length;
+    // Hard cut: instant swap, NO opacity transition, NO transform animation
+    imgEl.src = posters[currentIndex].src;
+    imgEl.alt = posters[currentIndex].alt;
+  }
+
+  advanceHeroImage = function () {
+    const nextIdx = (currentIndex + 1) % posters.length;
+    switchImage(nextIdx);
+  };
+
+  // Tab visibility: pause rotation when tab is hidden, resume when tab is active on home
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      stopHeroCycle();
+    } else if (document.visibilityState === 'visible' && currentRoute === 'home') {
+      startHeroCycle();
+    }
+  });
+
+  // Reduced motion preference listener
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (typeof motionQuery.addEventListener === 'function') {
+    motionQuery.addEventListener('change', (e) => {
+      if (e.matches) {
+        stopHeroCycle();
+      } else if (currentRoute === 'home' && document.visibilityState === 'visible') {
+        startHeroCycle();
+      }
+    });
+  }
+
+  if (currentRoute === 'home') {
+    startHeroCycle();
+  }
+}
+
+// ----------------------------------------------------------------------------
+// ABOUT PROFILE PHOTO SCROLL-PROGRESS SCALE INTERACTION
+// Initial state: scale(1.45) at 0% About section progress (strongly zoomed in)
+// Scale smoothly and reversibly decreases as the user scrolls down:
+// 0%   progress -> scale 1.45 (zoomed in at start of photo section)
+// 25%  progress -> scale ~1.34
+// 50%  progress -> scale ~1.23
+// ----------------------------------------------------------------------------
+// ABOUT PROFILE PHOTO SCROLL-PROGRESS SCALE INTERACTION (SCOPED TO PHOTO SECTION)
+// - Start scale: scale(1.45) at start of About photo section (progress = 0)
+// - End scale: scale(1) at end of About photo interaction range (progress = 1)
+// - Interaction range: Strictly the height of the About photo container (~500px)
+// - Once user scrolls past the photo range (into lower About, Contact, or Footer),
+//   the scale is strictly locked at scale(1) and scroll calculation is halted.
+// - Footer scrolling has ZERO effect on the photo scale.
+// - Reverses smoothly when scrolling back up through the photo range.
+// - Applied strictly to .about-photo with transform-origin: center center.
+// ----------------------------------------------------------------------------
+
+let cachedPhotoEl = null;
+let cachedPhotoBox = null;
+let cachedAboutSection = null;
+let cachedAboutEl = null;
+let cachedPhotoStartScroll = 0;
+let cachedPhotoScrollRange = 0;
+let lastAppliedProgress = null;
+let lastAppliedScale = null;
+
+export function updateAboutMetrics() {
+  if (!cachedAboutSection) {
+    cachedAboutSection = document.getElementById('view-about');
+  }
+  if (!cachedAboutEl) {
+    cachedAboutEl = document.querySelector('.about');
+  }
+  if (!cachedPhotoBox) {
+    cachedPhotoBox = document.querySelector('.about-photo-box');
+  }
+  if (!cachedPhotoEl) {
+    cachedPhotoEl = document.querySelector('.about-photo') || document.getElementById('aboutProfileImg');
+  }
+
+  if (!cachedAboutSection || !cachedAboutEl || !cachedAboutSection.classList.contains('is-active')) return;
+
+  const rect = cachedAboutEl.getBoundingClientRect();
+  const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+  cachedPhotoStartScroll = rect.top + currentScrollY;
+
+  // The interaction range is strictly isolated to the height of the photo container (~380-512px),
+  // completely decoupled from the rest of the About page, Contact, and Footer.
+  const boxHeight = cachedPhotoBox ? cachedPhotoBox.offsetHeight : 512;
+  const docHeight = Math.max(
+    document.documentElement ? document.documentElement.scrollHeight : 0,
+    document.body ? document.body.scrollHeight : 0
+  );
+  const maxDocScroll = Math.max(0, docHeight - window.innerHeight);
+
+  let range = Math.max(150, boxHeight);
+  if (maxDocScroll > 0 && maxDocScroll < range + 60) {
+    // On exceptionally tall viewports (e.g. tablet portrait 820x1180) where max scroll is very short,
+    // finish the zoom well before the user reaches the footer so scale(1.00) is reached inside the photo section.
+    range = Math.max(60, Math.floor(maxDocScroll * 0.5));
+  }
+  cachedPhotoScrollRange = range;
+}
+
+export function updateAboutPhotoScale() {
+  if (!cachedPhotoEl) {
+    cachedPhotoEl = document.querySelector('.about-photo') || document.getElementById('aboutProfileImg');
+  }
+  if (!cachedPhotoEl) return;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced || window.innerWidth <= 768) {
+    cachedPhotoEl.style.transform = 'scale(1)';
+    cachedPhotoEl.style.transformOrigin = 'center center';
+    lastAppliedProgress = null;
+    lastAppliedScale = 1;
+    return;
+  }
+
+  if (!cachedAboutSection) {
+    cachedAboutSection = document.getElementById('view-about');
+  }
+  if (!cachedAboutSection || !cachedAboutSection.classList.contains('is-active')) {
+    return;
+  }
+
+  if (cachedPhotoScrollRange === 0) {
+    updateAboutMetrics();
+  }
+
+  const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+  const relativeScroll = currentScrollY - cachedPhotoStartScroll;
+
+  // 1. Past the photo interaction range (lower About, Contact, or Footer):
+  // Lock at scale(1) and immediately return without further calculation.
+  if (relativeScroll >= cachedPhotoScrollRange) {
+    if (lastAppliedProgress !== 1) {
+      lastAppliedProgress = 1;
+      lastAppliedScale = 1;
+      cachedPhotoEl.style.transform = 'scale(1)';
+      cachedPhotoEl.style.transformOrigin = 'center center';
+    }
+    return;
+  }
+
+  // 2. At or above the start of the photo interaction range:
+  // Lock at scale(1.45) and return.
+  if (relativeScroll <= 0) {
+    if (lastAppliedProgress !== 0) {
+      lastAppliedProgress = 0;
+      lastAppliedScale = 1.45;
+      cachedPhotoEl.style.transform = 'scale(1.45)';
+      cachedPhotoEl.style.transformOrigin = 'center center';
+    }
+    return;
+  }
+
+  // 3. Inside the local photo interaction range (0 < relativeScroll < cachedPhotoScrollRange):
+  const progress = relativeScroll / (cachedPhotoScrollRange || 1);
+  const targetScale = Math.max(1, Math.min(1.45, 1.45 - (progress * 0.45)));
+
+  if (lastAppliedScale !== targetScale) {
+    lastAppliedScale = targetScale;
+    lastAppliedProgress = progress;
+    cachedPhotoEl.style.transform = `scale(${targetScale.toFixed(4)})`;
+    cachedPhotoEl.style.transformOrigin = 'center center';
+  }
+}
+
+export function setupAboutScrollZoom() {
+  let ticking = false;
+  function onScroll() {
+    if (window.innerWidth <= 768 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+    if (!cachedAboutSection) {
+      cachedAboutSection = document.getElementById('view-about');
+    }
+    if (!cachedAboutSection || !cachedAboutSection.classList.contains('is-active')) {
+      return;
+    }
+
+    const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+    const relScroll = currentScrollY - cachedPhotoStartScroll;
+
+    // Completely bypass RAF if scrolling outside interaction range with final scale already applied
+    if (relScroll >= cachedPhotoScrollRange && lastAppliedProgress === 1) {
+      return;
+    }
+    if (relScroll <= 0 && lastAppliedProgress === 0) {
+      return;
+    }
+
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      updateAboutPhotoScale();
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => {
+    lastAppliedProgress = null;
+    lastAppliedScale = null;
+    updateAboutMetrics();
+    updateAboutPhotoScale();
+  }, { passive: true });
+
+  if (typeof document !== 'undefined' && document.fonts && typeof document.fonts.ready?.then === 'function') {
+    document.fonts.ready.then(() => {
+      if (currentRoute === 'about') {
+        lastAppliedProgress = null;
+        lastAppliedScale = null;
+        updateAboutMetrics();
+        updateAboutPhotoScale();
+      }
+    });
+  }
+
+  updateAboutMetrics();
+  updateAboutPhotoScale();
+}
+
+// ============================================================================
+// 10. INITIALIZATION
+// ============================================================================
+
+export function init() {
+  renderFeaturedWork();
+  renderWorkPage();
+  renderArchivePage();
+
+  setupRouterListeners();
+  setupArchiveHover();
+  setupScrollAnimations();
+  setupLightbox();
+  setupMobileNav();
+  setupContactForm();
+  setupCustomCursor();
+  setupHeroMonogram();
+  setupAboutScrollZoom();
+
+  // Initialize initial route based on URL path or hash
+  const initialRoute = resolveRouteFromLocation();
+  setRouteImmediate(initialRoute);
+
+  window.setRouteImmediate = setRouteImmediate;
+  window.navigateTo = navigateTo;
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+}

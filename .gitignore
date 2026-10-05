@@ -1,0 +1,15 @@
+
+# Build output
+dist/
+
+# Large original poster files
+public/assets/posters/Multo.png
+public/assets/posters/featured/Multo.png
+public/assets/posters/featured/undressed.png
+public/assets/posters/featured/captcha.png
+
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules/

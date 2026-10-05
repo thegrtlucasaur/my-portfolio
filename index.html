@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Portfolio of Mark Bryan S. Lucas — Multimedia designer, video editor, and IT specialist creating posters, visual content, and digital experiences based in Camarines Sur, Philippines.">
+  <title>MARK BRYAN S. LUCAS — Multimedia Designer & Video Editor</title>
+  
+  <!-- Font Preloads: Neue Montreal -->
+  <link rel="preload" href="/fonts/neue-montreal/neuemontreal-regular.woff2" as="font" type="font/woff2" crossorigin>
+  
+  <!-- Critical Image Preloads -->
+  <link rel="preload" href="/assets/posters/featured/oh-yeah-steve-lacy.webp" as="image">
+  <link rel="preload" href="/assets/images/me.jpg" as="image">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/src/css/style.css">
+  
+  <!-- Favicon & Touch Icon (Circular Profile Avatar) -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/profile-favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+</head>
+<body>
+  <!-- Accessible Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Editorial Curtain Page Transition -->
+  <div class="transition-overlay" id="transitionOverlay" aria-hidden="true">
+    <div class="transition-back"></div>
+    <div class="transition-block"></div>
+  </div>
+
+  <!-- Minimal Editorial Header (Three Floating White Labels) -->
+  <header class="site-header">
+    <nav class="navbar" aria-label="Site Navigation">
+      <!-- 1. Left Label: Identity -->
+      <a href="/" class="nav-logo anchor" data-route="home" aria-label="©thegrtlucas - Home">
+        <span class="link-line">©thegrtlucas</span>
+      </a>
+
+      <!-- 2. Center Label: Shared White Container for Work / Archive / About -->
+      <div class="nav-links-wrapper desktop-el" aria-label="Primary navigation">
+        <div class="nav-links-box">
+          <a href="/work" class="nav-link anchor" data-route="work">
+            <span class="nav-link-label link-line">Work</span>
+            <span class="nav-link-count" aria-label="8 projects">(8)</span>
+          </a>
+          <a href="/archive" class="nav-link anchor" data-route="archive">
+            <span class="nav-link-label link-line">Archive</span>
+            <span class="nav-link-count" aria-label="16 archived projects">(16)</span>
+          </a>
+          <a href="/about" class="nav-link anchor" data-route="about">
+            <span class="nav-link-label link-line">About</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. Right Label: Get in touch ↗ linking to mailto:markbryanlucas05@gmail.com -->
+      <a href="mailto:markbryanlucas05@gmail.com" class="nav-contact desktop-el" aria-label="Get in touch via email">
+        <span class="link-line">Get in touch ↗</span>
+      </a>
+
+      <!-- Mobile Menu Toggle Button (White rectangular label) -->
+      <button type="button" class="burger-button mobile-el" id="navToggleMobile" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Toggle navigation menu">
+        <div class="burger-button-text">
+          <p class="burger-button-text-el" id="navToggleText">MENU</p>
+          <p class="burger-button-text-el" aria-hidden="true">CLOSE</p>
+        </div>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Fullscreen Mobile Navigation Drawer -->
+  <div class="burger-mobile mobile-el" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+    <div class="burger-wrapper">
+      <div class="burger-top-bar">
+        <a class="nav-logo anchor" href="/" data-route="home" aria-label="©thegrtlucas - Home">
+          <span class="link-line">©thegrtlucas</span>
+        </a>
+        <button type="button" class="burger-close-btn" id="mobileDrawerCloseBtn" aria-label="Close navigation menu">
+          <span>CLOSE</span>
+        </button>
+      </div>
+
+      <div class="burger-links">
+        <span class="bracket-tag mobile-drawer-tag">[ Navigation ]</span>
+        <a class="burger-link anchor" href="/work" data-route="work">
+          <span class="burger-link-text">Work <span class="burger-link-count">(8)</span></span>
+        </a>
+        <a class="burger-link anchor" href="/archive" data-route="archive">
+          <span class="burger-link-text">Archive <span class="burger-link-count">(16)</span></span>
+        </a>
+        <a class="burger-link anchor" href="/about" data-route="about">
+          <span class="burger-link-text">About</span>
+        </a>
+        <a class="burger-link burger-link-contact" href="mailto:markbryanlucas05@gmail.com" aria-label="Get in touch via email">
+          <span class="burger-link-text">Get in touch ↗</span>
+        </a>
+      </div>
+
+      <div class="burger-footer">
+        <span class="burger-footer-location">[ Camarines Sur, Philippines ]</span>
+      </div>
+    </div>
+
+    <div class="burger-mobile-overlay" id="mobileDrawerOverlay"></div>
+  </div>
+
+  <!-- Main View Container -->
+  <main id="main-content">
+
+    <!-- ======================================================================
+         VIEW 1: HOME
+         ====================================================================== -->
+    <section class="view-section is-active" id="view-home" data-view="home">
+      <div class="editorial-container">
+        <!-- Hero Section: Oversized Editorial Wordmark with Embedded Image Aperture -->
+        <div class="home-hero">
+          <!-- 1. Enormous Split Display Title with Embedded Artwork Aperture -->
+          <div class="home-hero-display-wrap">
+            <h1 class="home-title-display text-box is-masking">
+              <span class="home-title-word text-in" style="--stagger-delay: 0.06s;">Mark</span>
+              <span class="home-title-image-box text-in" id="heroTitleImageBox" style="--stagger-delay: 0.14s;" aria-label="Mark Bryan - Featured poster preview">
+                <img
+                  src="/assets/posters/featured/oh-yeah-steve-lacy.webp"
+                  alt="Mark Bryan - Featured poster design"
+                  class="home-title-image"
+                  id="heroTitleImg"
+                  width="360"
+                  height="225"
+                  loading="eager"
+                  decoding="async"
+                />
+              </span>
+              <span class="home-title-word text-in" style="--stagger-delay: 0.22s;">Bryan</span>
+            </h1>
+          </div>
+
+          <!-- 2. Large Centered Editorial Subtitle & Context Tag -->
+          <div class="home-hero-desc-wrapper scroll-in-group">
+            <p class="home-hero-description text-box">
+              <span class="scroll-in">
+                Graphic designer and videographer<br class="desktop-br">
+                creating posters, visual identities, digital content,<br class="desktop-br">
+                and films that bring ideas to life.
+              </span>
+            </p>
+            <p class="home-hero-location text-box">
+              <span class="scroll-in">[ Albay, Philippines ]</span>
+            </p>
+          </div>
+
+          <!-- 3. Information Row Transition (Hairline, Approach, 01 Statement, CTA) -->
+          <div class="infos-box scroll-in-group">
+            <div class="border"></div>
+            <div class="infos-box-left">
+              <p class="text-box">
+                <span class="scroll-in">[ Approach ]</span>
+              </p>
+            </div>
+            <div class="infos-box-right">
+              <p class="infos-box-text">
+                <span class="text-box">
+                  <span class="scroll-in">
+                    <span class="infos-box-num">01</span>
+                    I design what you see. I film what you feel. Combining creative visual storytelling with technical IT execution to craft visual content and digital experiences that are visually striking, structurally sound, and purpose-driven.
+                  </span>
+                </span>
+              </p>
+              <a class="cta text-box anchor" href="/about" data-route="about">
+                <div class="scroll-in">
+                  <div class="cta-text">
+                    <span class="link-line">More about me</span>
+                    <span class="cta-icon" aria-hidden="true">&rarr;</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Work Teaser (Configurable Showcase) -->
+        <section class="home-work">
+          <div class="home-work-header scroll-in-group">
+            <h2 class="home-work-header-title text-box">
+              <span class="scroll-in">Selected works</span>
+            </h2>
+            <a class="cta text-box anchor desktop-el" href="/work" data-route="work">
+              <div class="scroll-in">
+                <div class="cta-text">
+                  <span class="link-line">See all works</span>
+                  <span class="cta-icon" aria-hidden="true">&rarr;</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="home-work-grid" id="homeFeaturedGrid">
+            <!-- Dynamically populated from configurable featuredProjectIds in main.js -->
+          </div>
+
+          <a class="cta text-box anchor mobile-el scroll-in-group" href="/work" data-route="work">
+            <div class="scroll-in">
+              <div class="cta-text">
+                <span class="link-line">See all works</span>
+                <span class="cta-icon" aria-hidden="true">&rarr;</span>
+              </div>
+            </div>
+          </a>
+        </section>
+
+        <!-- Editorial Contact Invitation Bar — 3-column grid matching footer geometry -->
+        <div class="contact-bar scroll-in-group">
+          <div class="border"></div>
+          <!-- Col 1: Label -->
+          <div class="contact-bar-col contact-bar-col-left">
+            <p class="text-box">
+              <span class="scroll-in contact-bar-label">[ Contact ]</span>
+            </p>
+          </div>
+          <!-- Col 2: Invitation text -->
+          <div class="contact-bar-col contact-bar-col-center">
+            <p class="contact-bar-text">
+              <span class="text-box"><span class="scroll-in text-indent">Have a project, collaboration,</span></span>
+              <span class="text-box"><span class="scroll-in">or creative idea in mind?</span></span>
+            </p>
+          </div>
+          <!-- Col 3: CTA -->
+          <div class="contact-bar-col contact-bar-col-right">
+            <a class="cta text-box anchor" href="/contact" data-route="contact">
+              <div class="scroll-in">
+                <div class="cta-text">
+                  <span class="link-line">Get in touch</span>
+                  <span class="cta-icon" aria-hidden="true">&rarr;</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         VIEW 2: WORK (CURATED EDITORIAL POSTER GRID)
+         ====================================================================== -->
+    <section class="view-section" id="view-work" data-view="work">
+      <div class="editorial-container">
+        <header class="work-hero stagger-el" style="--stagger-delay: 0.02s;">
+          <div class="work-hero-title-wrapper">
+            <h1 class="work-hero-title">
+              <span>Work</span>
+              <span class="work-hero-count" id="workCountHeader">(6)</span>
+            </h1>
+          </div>
+          <div class="border"></div>
+        </header>
+
+        <div class="work-grid" id="workGalleryGrid">
+          <!-- Dynamically rendered via renderWorkPage() in main.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         VIEW 3: ARCHIVE (EDITORIAL INDEX LIST WITH HOVER PREVIEW)
+         ====================================================================== -->
+    <section class="view-section" id="view-archive" data-view="archive">
+      <div class="editorial-container">
+        <header class="archive-hero stagger-el" style="--stagger-delay: 0.02s;">
+          <div class="archive-hero-title-wrapper">
+            <h1 class="archive-hero-title">
+              <span>Archive</span>
+              <span class="archive-hero-count" id="archiveCountHeader">(6)</span>
+            </h1>
+          </div>
+        </header>
+
+        <div class="archive">
+          <div class="archive-list-header stagger-el" style="--stagger-delay: 0.05s;" aria-hidden="true">
+            <span>[ Name ]</span>
+            <span class="archive-col-detail">[ Detail ]</span>
+            <span class="archive-col-date list-last-el">[ Date ]</span>
+          </div>
+
+          <div class="archive-list" id="archiveList">
+            <!-- Dynamically populated from main.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         VIEW 4: ABOUT
+         ====================================================================== -->
+    <section class="view-section" id="view-about" data-view="about">
+      <div class="editorial-container">
+        <div class="about">
+          <!-- Left: Sticky Profile Photo Frame -->
+          <div class="about-photo-box stagger-el" id="aboutImageSticky" style="--stagger-delay: 0.02s;">
+            <div class="about-photo-wrapper">
+              <img
+                src="/assets/images/me.jpg"
+                alt="Mark Bryan Lucas - Profile"
+                class="about-photo"
+                id="aboutProfileImg"
+                width="6048"
+                height="8064"
+                loading="eager"
+                decoding="async"
+                style="transform: scale(1.00); transform-origin: center center;"
+              />
+            </div>
+          </div>
+
+          <!-- Right: Editorial Bio, Experience & Capabilities -->
+          <div class="about-right stagger-el" style="--stagger-delay: 0.06s;">
+            <div class="about-first scroll-in-group">
+              <p class="about-first-text text-box">
+                <span class="scroll-in alinea-1">I'm an Information Technology graduate</span>
+              </p>
+              <p class="about-first-text text-box">
+                <span class="scroll-in alinea-2">with hands-on experience in multimedia production,</span>
+              </p>
+              <p class="about-first-text text-box">
+                <span class="scroll-in">graphic design, video editing, and development.</span>
+              </p>
+            </div>
+
+            <div class="about-second">
+              <!-- Background / Story -->
+              <div class="about-infos-box scroll-in-group">
+                <div class="border"></div>
+                <p class="text-box"><span class="scroll-in">[ Background ]</span></p>
+                <p class="about-text">
+                  I enjoy combining creative visual storytelling with technical IT execution to craft visual content and digital experiences that are visually striking, structurally sound, and purpose-driven.
+                </p>
+              </div>
+
+              <!-- Internship Experience -->
+              <div class="about-service scroll-in-group">
+                <div class="border"></div>
+                <p class="text-box"><span class="scroll-in">[ Experience ]</span></p>
+                <div class="about-service-text">
+                  <span class="about-numb">01</span>
+                  <strong>Camarines Sur Polytechnic Colleges · ICT Unit</strong><br>
+                  Multimedia Team Intern — Produced official promotional video content, multimedia documentations, and creative assets, while updating and managing over 14,000+ student institutional records and assisting technical IT support tasks.
+                </div>
+              </div>
+
+              <!-- Capabilities -->
+              <div class="about-service scroll-in-group">
+                <div class="border"></div>
+                <p class="text-box"><span class="scroll-in">[ Capabilities ]</span></p>
+                <div class="about-service-text">
+                  <span class="about-numb">01</span>
+                  <strong>Graphic Design &amp; Posters:</strong> Poster design, typography systems, editorial layouts, photo editing, and brand visuals.
+                </div>
+                <div class="about-service-text">
+                  <span class="about-numb">02</span>
+                  <strong>Video Editing &amp; Multimedia:</strong> Videography, pacing, sound synchronization, motion cuts, and documentary coverage.
+                </div>
+                <div class="about-service-text">
+                  <span class="about-numb">03</span>
+                  <strong>Front-End Web Development:</strong> Semantic HTML, modern responsive CSS, and interactive JavaScript interfaces.
+                </div>
+                <div class="about-service-text">
+                  <span class="about-numb">04</span>
+                  <strong>IT &amp; Systems Support:</strong> PC/laptop hardware maintenance, troubleshooting, networking, and technical support.
+                </div>
+              </div>
+
+              <!-- Tools & Software -->
+              <div class="about-infos-box scroll-in-group">
+                <div class="border"></div>
+                <p class="text-box"><span class="scroll-in">[ Tools &amp; Software ]</span></p>
+                <p class="about-text">
+                  Figma, Adobe Photoshop, Adobe Lightroom, Final Cut Pro, CapCut, HTML, CSS, JavaScript, Microsoft Office.
+                </p>
+              </div>
+
+              <!-- Education -->
+              <div class="about-infos-box scroll-in-group">
+                <div class="border"></div>
+                <p class="text-box"><span class="scroll-in">[ Education ]</span></p>
+                <p class="about-text">
+                  <strong>Bachelor of Science in Information Technology</strong><br>
+                  Camarines Sur Polytechnic Colleges · 2022–2026
+                </p>
+              </div>
+
+              <!-- Resume Request Link -->
+              <div class="about-credit scroll-in-group">
+                <div class="border"></div>
+                <a class="cta text-box anchor" href="mailto:markbryanlucas05@gmail.com?subject=Resume%20Inquiry%20-%20Mark%20Bryan%20Lucas" target="_blank" rel="noopener noreferrer">
+                  <div class="scroll-in">
+                    <div class="cta-text">
+                      <span class="link-line">Request Resume</span>
+                      <span class="cta-icon-up" aria-hidden="true">&nearr;</span>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         VIEW 5: CONTACT
+         ====================================================================== -->
+    <section class="view-section" id="view-contact" data-view="contact">
+      <div class="editorial-container">
+        <div class="contact-view-wrap">
+          <div class="contact-layout">
+            <!-- Left: Direct Info -->
+            <div class="contact-info-col scroll-in-group stagger-el" style="--stagger-delay: 0.03s;">
+              <span class="bracket-tag">[ Inquiries ]</span>
+              <h1 class="contact-invitation text-box">
+                <span class="scroll-in">Let's work together.</span>
+              </h1>
+              <p class="contact-subtext">
+                Have a project, collaboration, or creative idea in mind? Tell me about your project, goals, and timeline.
+              </p>
+
+              <div class="direct-contacts-list">
+                <div class="direct-contact-item">
+                  <span class="direct-contact-label">[ Email ]</span>
+                  <a href="mailto:markbryanlucas05@gmail.com" class="direct-contact-val link-line">markbryanlucas05@gmail.com</a>
+                </div>
+                <div class="direct-contact-item">
+                  <span class="direct-contact-label">[ Phone ]</span>
+                  <a href="tel:+639693046372" class="direct-contact-val link-line">+63 969 304 6372</a>
+                </div>
+                <div class="direct-contact-item">
+                  <span class="direct-contact-label">[ Instagram ]</span>
+                  <a href="https://instagram.com/thegrtlucas.psd" target="_blank" rel="noopener noreferrer" class="direct-contact-val link-line">@thegrtlucas.psd</a>
+                </div>
+                <div class="direct-contact-item">
+                  <span class="direct-contact-label">[ Location ]</span>
+                  <span class="direct-contact-val">Camarines Sur, Philippines</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Minimalist Neutral Editorial Form -->
+            <div class="contact-form-col stagger-el" style="--stagger-delay: 0.07s;">
+              <form id="contact-form" class="editorial-form" novalidate>
+                <div class="form-group">
+                  <label for="name" class="form-label">[ Name ]</label>
+                  <input type="text" id="name" name="name" class="form-input" required placeholder="What should I call you?" autocomplete="name" />
+                  <span class="form-error" id="name-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="email" class="form-label">[ Email ]</label>
+                  <input type="email" id="email" name="email" class="form-input" required placeholder="name@example.com" autocomplete="email" />
+                  <span class="form-error" id="email-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="subject" class="form-label">[ Subject ]</label>
+                  <input type="text" id="subject" name="subject" class="form-input" required placeholder="Project inquiry / collaboration" />
+                  <span class="form-error" id="subject-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="budget" class="form-label">[ Budget Tier ]</label>
+                  <select id="budget" name="budget" class="form-select" required>
+                    <option value="" disabled selected>Select an estimated budget</option>
+                    <option value="₱1,000 – ₱3,000">₱1,000 – ₱3,000</option>
+                    <option value="₱3,000 – ₱5,000">₱3,000 – ₱5,000</option>
+                    <option value="₱5,000 – ₱10,000">₱5,000 – ₱10,000</option>
+                    <option value="₱10,000 – ₱20,000">₱10,000 – ₱20,000</option>
+                    <option value="₱20,000+">₱20,000+</option>
+                    <option value="Flexible / Not sure yet">Flexible / Not sure yet</option>
+                  </select>
+                  <span class="form-error" id="budget-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="message" class="form-label">[ Project Details ]</label>
+                  <textarea id="message" name="message" class="form-textarea" rows="4" required placeholder="Project description, scope, and timeline..."></textarea>
+                  <span class="form-error" id="message-error" aria-live="polite"></span>
+                </div>
+
+                <button type="submit" class="btn-submit" id="contactSubmitBtn">
+                  <span>Send inquiry</span>
+                  <span aria-hidden="true">&rarr;</span>
+                </button>
+
+                <div id="form-status" class="form-status-alert" role="status" aria-live="polite"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Large Editorial Footer — 3-column equal grid, gallery-like whitespace -->
+  <footer class="footer" id="siteFooter">
+    <div class="footer-grid">
+
+      <!-- Left Column: Copyright -->
+      <div class="footer-col footer-col-left">
+        <span class="footer-copyright">©2026</span>
+      </div>
+
+      <!-- Center Column: [ Open ] + Editorial paragraph -->
+      <div class="footer-col footer-col-center">
+        <span class="footer-label">[ Open ]</span>
+        <p class="footer-paragraph">
+          I'm always looking to meet new people, collaborate on new
+          projects, and explore new ideas. Feel free to <a href="mailto:markbryanlucas05@gmail.com" class="link-line footer-inline-link">say hello.</a>
+        </p>
+      </div>
+
+      <!-- Right Column: [ Contact ] + Email -->
+      <div class="footer-col footer-col-right">
+        <span class="footer-label">[ Contact ]</span>
+        <div class="footer-contact-list">
+          <div class="footer-contact-row">
+            <span class="footer-contact-key">Email:</span>
+            <a href="mailto:markbryanlucas05@gmail.com" class="link-line footer-link footer-contact-val" aria-label="Email markbryanlucas05@gmail.com">markbryanlucas05@gmail.com</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Credit: quiet & unobtrusive -->
+    <div class="footer-credit">
+      <p class="footer-credit-text">Inspired by Matthieu Givelet</p>
+    </div>
+  </footer>
+
+
+  <!-- Floating Desktop Archive Poster Preview -->
+  <div class="archive-floating-preview" id="archiveFloatingPreview" aria-hidden="true">
+    <img src="" alt="" class="archive-floating-img" id="archiveFloatingImg" />
+  </div>
+
+  <!-- Full-Resolution WebP Lightbox Modal -->
+  <div class="project-lightbox" id="projectLightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Full poster viewer">
+    <div class="lightbox-backdrop" id="lightboxBackdrop" tabindex="-1"></div>
+    <button type="button" class="lightbox-close-btn" id="lightboxCloseBtn" tabindex="0" aria-label="Close poster viewer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="lightbox-dialog" role="document">
+      <img src="" alt="" id="lightboxImg" class="lightbox-img" />
+    </div>
+  </div>
+
+  <!-- Custom SVG Cursor (Figma-Style Selection Arrow) -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true">
+    <img src="/cursor.svg" alt="" width="20" height="22" class="custom-cursor-img" draggable="false" />
+  </div>
+
+  <!-- Application Script -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>
