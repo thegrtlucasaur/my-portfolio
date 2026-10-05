@@ -1,11 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="utf-8">
+  <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Portfolio of Mark Bryan S. Lucas — Multimedia designer, video editor, and IT specialist creating posters, visual content, and digital experiences based in Camarines Sur, Philippines.">
   <title>MARK BRYAN S. LUCAS — Multimedia Designer & Video Editor</title>
   
+  <!-- Fallback if JavaScript is disabled -->
+  <noscript>
+    <style>
+      .loader {
+        display: none !important;
+      }
+    </style>
+  </noscript>
+
   <!-- Font Preloads: Neue Montreal -->
   <link rel="preload" href="/fonts/neue-montreal/neuemontreal-regular.woff2" as="font" type="font/woff2" crossorigin>
   
@@ -26,6 +36,14 @@
 <body>
   <!-- Accessible Skip Link -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Initial Page Preloader (Layered Editorial Curtain inspired by Matthieu Givelet) -->
+  <div class="loader" id="pageLoader" aria-hidden="true">
+    <div class="loader-transition">
+      <div class="loader-transition-back"></div>
+      <div class="loader-transition-block"></div>
+    </div>
+  </div>
 
   <!-- Editorial Curtain Page Transition -->
   <div class="transition-overlay" id="transitionOverlay" aria-hidden="true">

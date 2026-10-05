@@ -103,6 +103,7 @@ export function getFeaturedProjects() {
 
 let currentRoute = 'home';
 let isTransitioning = false;
+let isInitialLoading = true;
 
 const routes = {
   '/': 'home',
@@ -153,7 +154,9 @@ export function setRouteImmediate(targetRoute) {
 
   currentRoute = targetRoute;
   if (targetRoute === 'home') {
-    startHeroCycle();
+    if (!isInitialLoading) {
+      startHeroCycle();
+    }
   } else {
     stopHeroCycle();
   }
@@ -166,7 +169,9 @@ export function setRouteImmediate(targetRoute) {
     updateAboutMetrics();
     updateAboutPhotoScale();
   }
-  setupScrollAnimations();
+  if (!isInitialLoading) {
+    setupScrollAnimations();
+  }
 }
 
 /**
@@ -1208,17 +1213,71 @@ export function setupAboutScrollZoom() {
 }
 
 // ============================================================================
-// 10. INITIALIZATION
+// 10. INITIALIZATION & PRELOADER
 // ============================================================================
 
-export function init() {
+/**
+ * Resolves when genuine initial page readiness is reached:
+ * - Document fonts ready (Neue Montreal)
+ * - Critical above-the-fold asset for the active route (e.g. hero image or about photo)
+ * Safeguarded with a strict 700ms timeout so it never hangs or delays perceived performance.
+ * Does NOT preload large lazy-loaded poster files.
+ */
+async function waitForInitialReadiness(route) {
+  const fontPromise = (typeof document !== 'undefined' && document.fonts && document.fonts.ready)
+    ? document.fonts.ready
+    : Promise.resolve();
+
+  let assetPromise = Promise.resolve();
+  if (route === 'home') {
+    const heroImg = document.getElementById('heroTitleImg');
+    if (heroImg && !heroImg.complete) {
+      assetPromise = new Promise((resolve) => {
+        if (typeof heroImg.decode === 'function') {
+          heroImg.decode().then(resolve).catch(resolve);
+        } else {
+          heroImg.addEventListener('load', resolve, { once: true });
+          heroImg.addEventListener('error', resolve, { once: true });
+        }
+      });
+    }
+  } else if (route === 'about') {
+    const aboutImg = document.querySelector('.about-photo');
+    if (aboutImg && !aboutImg.complete) {
+      assetPromise = new Promise((resolve) => {
+        if (typeof aboutImg.decode === 'function') {
+          aboutImg.decode().then(resolve).catch(resolve);
+        } else {
+          aboutImg.addEventListener('load', resolve, { once: true });
+          aboutImg.addEventListener('error', resolve, { once: true });
+        }
+      });
+    }
+  }
+
+  // Strict timeout safeguard: Never hold the preloader longer than 700ms
+  const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 700));
+
+  await Promise.race([
+    Promise.all([fontPromise, assetPromise]),
+    timeoutPromise
+  ]);
+}
+
+export async function init() {
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const loader = document.getElementById('pageLoader');
+
+  if (loader && !prefersReduced) {
+    document.body.classList.add('is-loading');
+  }
+
   renderFeaturedWork();
   renderWorkPage();
   renderArchivePage();
 
   setupRouterListeners();
   setupArchiveHover();
-  setupScrollAnimations();
   setupLightbox();
   setupMobileNav();
   setupContactForm();
@@ -1232,6 +1291,40 @@ export function init() {
 
   window.setRouteImmediate = setRouteImmediate;
   window.navigateTo = navigateTo;
+
+  if (prefersReduced || !loader) {
+    isInitialLoading = false;
+    if (loader) loader.remove();
+    document.body.classList.remove('is-loading');
+    setupScrollAnimations();
+    if (initialRoute === 'home') {
+      startHeroCycle();
+    }
+    return;
+  }
+
+  // Await genuine initial page readiness (fonts + critical initial asset)
+  await waitForInitialReadiness(initialRoute);
+
+  // Trigger exit curtain animation
+  requestAnimationFrame(() => {
+    isInitialLoading = false;
+    loader.classList.add('is-loaded');
+    setupScrollAnimations();
+    if (initialRoute === 'home') {
+      startHeroCycle();
+    }
+
+    const cleanUpLoader = () => {
+      if (loader && loader.parentNode) {
+        loader.remove();
+      }
+      document.body.classList.remove('is-loading');
+    };
+
+    loader.addEventListener('animationend', cleanUpLoader, { once: true });
+    setTimeout(cleanUpLoader, 750);
+  });
 }
 
 if (typeof document !== 'undefined') {
