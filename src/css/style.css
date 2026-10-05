@@ -1015,13 +1015,13 @@ button:hover .link-line::before,
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* More whitespace placed ABOVE hero, controlled editorial space below */
-  padding-top: clamp(8.5rem, 18vw, 22rem);
-  padding-bottom: clamp(4.5rem, 8vw, 10rem);
+  /* Controlled whitespace above hero (more space above hero, less below) */
+  padding-top: clamp(6.5rem, 9.5vw, 9.5rem);
+  padding-bottom: clamp(3rem, 4.5vw, 5rem);
   padding-left: 2.5vw;
   padding-right: 2.5vw;
   /* Small controlled gap between hero headline and introductory section */
-  gap: clamp(1.8rem, 3.2vw, 3.8rem);
+  gap: clamp(1.4rem, 2.4vw, 2.8rem);
   width: 100%;
   overflow-x: clip;
 }
@@ -1040,10 +1040,10 @@ button:hover .link-line::before,
 
 .home-title-display {
   font-family: var(--font-primary);
-  font-size: clamp(3rem, 10.2vw, 12rem);
-  line-height: 0.94;
+  font-size: clamp(2.8rem, 9.6vw, 11.5rem);
+  line-height: 1;
   font-weight: 400;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   color: var(--color-text);
   display: inline-flex;
   align-items: center;
@@ -1054,13 +1054,17 @@ button:hover .link-line::before,
   white-space: nowrap;
   perspective: 25vw;
   position: relative;
+  overflow: visible;
 }
 
 .home-title-box {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
   overflow: hidden;
-  line-height: inherit;
+  line-height: 1.05;
+  padding-right: 0.08em;
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
   position: relative;
   z-index: 2;
 }
@@ -1068,6 +1072,8 @@ button:hover .link-line::before,
 .home-title-word {
   display: inline-block;
   line-height: inherit;
+  padding-right: 0.04em;
+  padding-bottom: 0.2em;
 }
 
 /* STAGE 1: Shift "Mark" and "Bryan" towards center so the image is hidden and the text reads "Mark Bryan" */
@@ -1083,11 +1089,13 @@ html.has-motion .home-title-box-2 {
 html.has-motion .home-title-box-1.is-animated {
   transform: translateX(0);
   transition: transform 1.2s cubic-bezier(0.66, 0, 0.23, 1);
+  overflow: visible;
 }
 
 html.has-motion .home-title-box-2.is-animated {
   transform: translateX(0);
   transition: transform 1.2s cubic-bezier(0.66, 0, 0.23, 1);
+  overflow: visible;
 }
 
 .home-title-image-box {
@@ -1239,11 +1247,11 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-hero {
-    padding-top: clamp(7rem, 16vw, 15rem);
-    padding-bottom: clamp(3.5rem, 6.5vw, 6.5rem);
+    padding-top: clamp(4.5rem, 8.5vw, 6.5rem);
+    padding-bottom: clamp(2rem, 3.5vw, 3.5rem);
     padding-left: 2.5vw;
     padding-right: 2.5vw;
-    gap: clamp(1.5rem, 2.5vw, 2.8rem);
+    gap: clamp(1rem, 1.8vw, 2rem);
   }
 
   .home-hero-display-wrap {
@@ -1251,20 +1259,21 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-title-display {
-    font-size: clamp(2.5rem, 9.2vw, 4.8rem);
-    line-height: 0.98;
+    font-size: clamp(2.4rem, 8.8vw, 4.4rem);
+    line-height: 1;
+    letter-spacing: -0.025em;
     gap: 1.4vw;
     white-space: nowrap;
   }
 
   .home-title-image-box {
-    width: clamp(4.2rem, 12vw, 6.8rem);
-    height: clamp(3rem, 8.5vw, 4.8rem);
+    width: clamp(4rem, 11.5vw, 6.5rem);
+    height: clamp(2.8rem, 8.2vw, 4.5rem);
     margin: 0;
   }
 
   :root {
-    --hero-title-shift: clamp(2.2rem, 6.2vw, 3.8rem);
+    --hero-title-shift: clamp(2rem, 5.8vw, 3.5rem);
   }
 
   .home-hero-desc-wrapper {
@@ -1306,11 +1315,11 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-hero {
-    padding-top: clamp(7rem, 25vw, 11rem);
-    padding-bottom: clamp(3.5rem, 10vw, 5rem);
+    padding-top: clamp(4.8rem, 13vw, 6.5rem);
+    padding-bottom: clamp(2rem, 5vw, 3rem);
     padding-left: 4vw;
     padding-right: 4vw;
-    gap: clamp(1.4rem, 4.5vw, 2.2rem);
+    gap: clamp(0.9rem, 2.5vw, 1.4rem);
   }
 
   .home-hero-display-wrap {
@@ -1318,8 +1327,9 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-title-display {
-    font-size: clamp(1.8rem, 8.6vw, 3.2rem);
+    font-size: clamp(1.75rem, 8.2vw, 2.9rem);
     line-height: 1.04;
+    letter-spacing: -0.025em;
     flex-wrap: nowrap;
     justify-content: center;
     gap: clamp(0.35rem, 1.2vw, 0.8rem);
@@ -1327,13 +1337,13 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-title-image-box {
-    width: clamp(3.2rem, 13vw, 4.6rem);
-    height: clamp(2.2rem, 9.2vw, 3.2rem);
+    width: clamp(3rem, 12vw, 4.4rem);
+    height: clamp(2rem, 8.5vw, 3rem);
     margin: 0;
   }
 
   :root {
-    --hero-title-shift: clamp(1.5rem, 6.8vw, 2.4rem);
+    --hero-title-shift: clamp(1.4rem, 6.2vw, 2.2rem);
   }
 
   .home-hero-desc-wrapper {
