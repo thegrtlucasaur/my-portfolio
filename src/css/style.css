@@ -591,7 +591,7 @@ button:hover .link-line::before,
   font-size: clamp(1.2rem, 1.75vw, 1.95rem);
   line-height: 1.25;
   color: var(--color-text);
-  font-weight: 400;
+  font-weight: 450;
 }
 
 .infos-box-num {
@@ -633,7 +633,7 @@ button:hover .link-line::before,
     max-width: 100%;
     font-size: clamp(1.15rem, 4.5vw, 1.45rem);
     line-height: 125%;
-    font-weight: 400;
+    font-weight: 450;
   }
 
   .infos-box-num {
@@ -1100,22 +1100,20 @@ html.has-motion .home-title-box-2.is-animated {
   z-index: 1;
 }
 
-/* STAGE 1 & 2: Reserved image slot in layout, visually hidden while text reveals upward */
+/* STAGE 1 & 2: Reserved image slot in layout, hidden while text reveals upward */
 html.has-motion .home-title-image-box {
-  opacity: 0;
-  transform: scale(0.92) translateY(6px);
+  visibility: hidden;
+  transform: scale(0.88) translateY(6px);
   transform-origin: center center;
   pointer-events: none;
 }
 
-/* STAGE 3: Clean editorial 2D pop entrance into the reserved typography aperture */
+/* STAGE 3: Clean editorial 2D pop entrance into the reserved typography aperture — no fading, no opacity animation */
 html.has-motion .home-title-image-box.is-animated {
-  opacity: 1;
+  visibility: visible;
   pointer-events: auto;
   transform: scale(1) translateY(0);
-  transition:
-    transform 0.65s cubic-bezier(0.18, 0.66, 0.18, 1),
-    opacity 0.4s cubic-bezier(0.18, 0.66, 0.18, 1);
+  transition: transform 0.6s cubic-bezier(0.18, 0.66, 0.18, 1);
 }
 
 /* Hero image itself: strictly instant swap, no transition or scale */
@@ -1284,7 +1282,7 @@ html.has-motion .home-title-image-box.is-animated {
   .infos-box-text {
     max-width: 100%;
     font-size: clamp(1.15rem, 1.8vw, 1.5rem);
-    font-weight: 400;
+    font-weight: 450;
   }
 }
 
@@ -2200,7 +2198,7 @@ html.has-motion .home-title-image-box.is-animated {
   font-size: clamp(1.2rem, 1.75vw, 1.95rem);
   line-height: 1.25;
   color: var(--color-text);
-  font-weight: 500;
+  font-weight: 450;
   max-width: clamp(22rem, 30vw, 36rem);
 }
 
@@ -2232,7 +2230,7 @@ html.has-motion .home-title-image-box.is-animated {
     max-width: 100%;
     font-size: clamp(1.15rem, 4.5vw, 1.45rem);
     line-height: 1.25;
-    font-weight: 500;
+    font-weight: 450;
   }
 }
 
@@ -2315,7 +2313,7 @@ html.has-motion .home-title-image-box.is-animated {
 /* Slightly larger and medium weight (500) per editorial specification */
 .footer-paragraph {
   font-family: var(--font-primary);
-  font-weight: 500;
+  font-weight: 450;
   font-size: clamp(1.2rem, 1.75vw, 1.95rem);
   line-height: 1.25;
   color: var(--color-text);
@@ -2418,7 +2416,7 @@ html.has-motion .home-title-image-box.is-animated {
   .footer-paragraph {
     max-width: clamp(16rem, 26vw, 24rem);
     font-size: clamp(1.15rem, 1.6vw, 1.5rem);
-    font-weight: 500;
+    font-weight: 450;
   }
 }
 
@@ -2446,7 +2444,7 @@ html.has-motion .home-title-image-box.is-animated {
     max-width: 100%;
     font-size: clamp(1.15rem, 4.5vw, 1.4rem);
     line-height: 1.25;
-    font-weight: 500;
+    font-weight: 450;
   }
 
   .footer-contact-val {
