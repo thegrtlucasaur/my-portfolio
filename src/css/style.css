@@ -1015,8 +1015,13 @@ button:hover .link-line::before,
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(4rem, 8vw, 10rem);
-  padding: clamp(6rem, 11vw, 14rem) 2.5vw clamp(6rem, 11vw, 14rem);
+  /* More whitespace placed ABOVE hero, controlled editorial space below */
+  padding-top: clamp(8.5rem, 18vw, 22rem);
+  padding-bottom: clamp(4.5rem, 8vw, 10rem);
+  padding-left: 2.5vw;
+  padding-right: 2.5vw;
+  /* Small controlled gap between hero headline and introductory section */
+  gap: clamp(1.8rem, 3.2vw, 3.8rem);
   width: 100%;
   overflow-x: clip;
 }
@@ -1035,16 +1040,16 @@ button:hover .link-line::before,
 
 .home-title-display {
   font-family: var(--font-primary);
-  font-size: clamp(3.6rem, 13vw, 15.5rem);
-  line-height: 0.92;
+  font-size: clamp(3rem, 10.2vw, 12rem);
+  line-height: 0.94;
   font-weight: 400;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
   color: var(--color-text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: clamp(1rem, 2.2vw, 2.8rem);
+  gap: clamp(0.8rem, 1.6vw, 2rem);
   margin: 0 auto;
   white-space: nowrap;
   perspective: 25vw;
@@ -1067,11 +1072,11 @@ button:hover .link-line::before,
 
 /* STAGE 1: Shift "Mark" and "Bryan" towards center so the image is hidden and the text reads "Mark Bryan" */
 html.has-motion .home-title-box-1 {
-  transform: translateX(var(--hero-title-shift, clamp(3.6rem, 8.8vw, 10rem)));
+  transform: translateX(var(--hero-title-shift, clamp(2.6rem, 6.8vw, 7.8rem)));
 }
 
 html.has-motion .home-title-box-2 {
-  transform: translateX(calc(-1 * var(--hero-title-shift, clamp(3.6rem, 8.8vw, 10rem))));
+  transform: translateX(calc(-1 * var(--hero-title-shift, clamp(2.6rem, 6.8vw, 7.8rem))));
 }
 
 /* STAGE 3: Settling horizontally to open the aperture for the image: 1.2s cubic-bezier(0.66, 0, 0.23, 1) */
@@ -1090,8 +1095,8 @@ html.has-motion .home-title-box-2.is-animated {
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  width: clamp(6.2rem, 16vw, 18.5rem);
-  height: clamp(4.4rem, 11vw, 13rem);
+  width: clamp(5rem, 13vw, 15.2rem);
+  height: clamp(3.6rem, 9.2vw, 10.8rem);
   margin: 0;
   border-radius: var(--radius-xs);
   overflow: clip;
@@ -1133,7 +1138,7 @@ html.has-motion .home-title-image-box.is-animated {
   transition: none !important;
 }
 
-/* 2. Large Centered Editorial Introductory Paragraph (Single continuous block) */
+/* 2. Large Centered Editorial Introductory Statement */
 .home-hero-desc-wrapper {
   display: flex;
   flex-direction: column;
@@ -1145,12 +1150,12 @@ html.has-motion .home-title-image-box.is-animated {
 
 .home-hero-description {
   font-family: var(--font-primary);
-  font-size: clamp(1.75rem, 3.2vw, 4.2rem);
-  line-height: 1.12;
+  font-size: clamp(1.55rem, 2.7vw, 3.4rem);
+  line-height: 1.15;
   font-weight: 400;
   color: var(--color-text);
   text-align: center;
-  max-width: clamp(30rem, 64vw, 76rem);
+  max-width: clamp(28rem, 50vw, 56rem);
   margin: 0 auto;
   letter-spacing: -0.025em;
   text-wrap: balance;
@@ -1158,6 +1163,23 @@ html.has-motion .home-title-image-box.is-animated {
 }
 
 .home-hero-intro-text {
+  display: inline-block;
+  line-height: inherit;
+}
+
+.home-hero-location {
+  font-family: var(--font-primary);
+  font-size: clamp(1.35rem, 2.3vw, 2.9rem);
+  line-height: 1.15;
+  font-weight: 400;
+  color: var(--color-text);
+  text-align: center;
+  margin: clamp(0.6rem, 1.2vw, 1.4rem) auto 0;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+}
+
+.home-hero-location-text {
   display: inline-block;
   line-height: inherit;
 }
@@ -1217,8 +1239,11 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-hero {
-    gap: clamp(3rem, 6vw, 6rem);
-    padding: clamp(5rem, 9vw, 9rem) 2.5vw clamp(5rem, 9vw, 9rem);
+    padding-top: clamp(7rem, 16vw, 15rem);
+    padding-bottom: clamp(3.5rem, 6.5vw, 6.5rem);
+    padding-left: 2.5vw;
+    padding-right: 2.5vw;
+    gap: clamp(1.5rem, 2.5vw, 2.8rem);
   }
 
   .home-hero-display-wrap {
@@ -1226,20 +1251,20 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-title-display {
-    font-size: clamp(2.8rem, 11.5vw, 5.5rem);
-    line-height: 0.95;
-    gap: 1.8vw;
+    font-size: clamp(2.5rem, 9.2vw, 4.8rem);
+    line-height: 0.98;
+    gap: 1.4vw;
     white-space: nowrap;
   }
 
   .home-title-image-box {
-    width: clamp(5rem, 15vw, 7.8rem);
-    height: clamp(3.5rem, 10.5vw, 5.4rem);
+    width: clamp(4.2rem, 12vw, 6.8rem);
+    height: clamp(3rem, 8.5vw, 4.8rem);
     margin: 0;
   }
 
   :root {
-    --hero-title-shift: clamp(2.8rem, 8vw, 4.5rem);
+    --hero-title-shift: clamp(2.2rem, 6.2vw, 3.8rem);
   }
 
   .home-hero-desc-wrapper {
@@ -1247,9 +1272,15 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-hero-description {
-    font-size: clamp(1.45rem, 3.2vw, 2.4rem);
-    line-height: 1.15;
-    max-width: 78vw;
+    font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+    line-height: 1.18;
+    max-width: 74vw;
+  }
+
+  .home-hero-location {
+    font-size: clamp(1.25rem, 2.4vw, 1.95rem);
+    line-height: 1.18;
+    margin-top: clamp(0.5rem, 1vw, 1rem);
   }
 
   .home-work {
@@ -1275,8 +1306,11 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-hero {
-    gap: clamp(2.5rem, 8vw, 4.5rem);
-    padding: clamp(6rem, 20vw, 10rem) 4vw clamp(4rem, 15vw, 8rem);
+    padding-top: clamp(7rem, 25vw, 11rem);
+    padding-bottom: clamp(3.5rem, 10vw, 5rem);
+    padding-left: 4vw;
+    padding-right: 4vw;
+    gap: clamp(1.4rem, 4.5vw, 2.2rem);
   }
 
   .home-hero-display-wrap {
@@ -1284,32 +1318,40 @@ html.has-motion .home-title-image-box.is-animated {
   }
 
   .home-title-display {
-    font-size: clamp(2rem, 9.8vw, 3.5rem);
-    line-height: 1.02;
+    font-size: clamp(1.8rem, 8.6vw, 3.2rem);
+    line-height: 1.04;
     flex-wrap: nowrap;
     justify-content: center;
-    gap: clamp(0.5rem, 1.8vw, 1.2rem);
+    gap: clamp(0.35rem, 1.2vw, 0.8rem);
     white-space: nowrap;
   }
 
   .home-title-image-box {
-    width: clamp(3.6rem, 17vw, 5.2rem);
-    height: clamp(2.5rem, 11.5vw, 3.6rem);
+    width: clamp(3.2rem, 13vw, 4.6rem);
+    height: clamp(2.2rem, 9.2vw, 3.2rem);
     margin: 0;
   }
 
   :root {
-    --hero-title-shift: clamp(2rem, 9.5vw, 3.2rem);
+    --hero-title-shift: clamp(1.5rem, 6.8vw, 2.4rem);
   }
 
   .home-hero-desc-wrapper {
     margin: 0 auto;
+    width: 100%;
   }
 
   .home-hero-description {
-    font-size: clamp(1.3rem, 5.2vw, 1.95rem);
-    line-height: 1.18;
+    font-size: clamp(1.2rem, 4.8vw, 1.7rem);
+    line-height: 1.22;
     max-width: 100%;
+    letter-spacing: -0.015em;
+  }
+
+  .home-hero-location {
+    font-size: clamp(1.1rem, 4.2vw, 1.55rem);
+    line-height: 1.22;
+    margin-top: clamp(0.4rem, 2vw, 0.8rem);
     letter-spacing: -0.015em;
   }
 
