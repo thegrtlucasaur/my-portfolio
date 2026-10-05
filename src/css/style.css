@@ -1462,7 +1462,7 @@ button:hover .link-line::before,
 
 /* --------------------------------------------------------------------------
    10. VIEW: ARCHIVE (EDITORIAL INDEX LIST WITH HOVER PREVIEW)
-   Columns: [ Name ]  [ Detail ]  [ Date ]
+   Columns: [ Project ]  [ Detail / Artist ]  [ Date ]
    -------------------------------------------------------------------------- */
 .archive-hero {
   padding: 4vw 0 3vw;
