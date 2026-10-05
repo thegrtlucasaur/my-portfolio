@@ -13,3 +13,6 @@ public/assets/posters/featured/captcha.png
 
 # Dependencies
 node_modules/
+
+# Large original poster files
+public/assets/posters/featured/it it loss?.png
