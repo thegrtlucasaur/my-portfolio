@@ -1516,11 +1516,10 @@ export async function init() {
 
 /**
  * Choreographed Post-Preloader Home Entrance inspired by Matthieu Givelet:
- * - Upward text reveal (.txt-in) from below clipping area: 1.2s cubic-bezier(.18, .66, .18, 1)
- * - Horizontal settling for title sides (Mark and Bryan): 1.5s cubic-bezier(.66, 0, .23, 1)
- * - 3D perspective entrance for hero image box: 1.5s cubic-bezier(.28, .54, .39, 1)
- * - Staggered navbar and supporting content entrance
- * - Automatic 1500ms hero image cycling resumes once initial entrance settles
+ * STAGE 1: Text only - "Mark Bryan" without image visible
+ * STAGE 2: "Mark Bryan" reveals upward from below clipping area (1.2s cubic-bezier(.18, .66, .18, 1))
+ * STAGE 3: After text establishes, "Mark" and "Bryan" part and image inserts into the gap
+ * NORMAL: Hero image automatic 1500ms cycling resumes after entrance finishes
  */
 export function triggerHomeIntroSequence() {
   const box1 = document.querySelector('.home-title-box-1');
@@ -1532,24 +1531,24 @@ export function triggerHomeIntroSequence() {
     border.classList.add('is-revealing');
   }
 
-  // Force reflow
+  // Force reflow so Stage 1 & 2 start cleanly
   void document.body.offsetWidth;
 
-  // Stagger horizontal settling for title sides
-  requestAnimationFrame(() => {
+  // STAGE 3: After "Mark Bryan" has settled upward (750ms), part the text to reveal the aperture
+  setTimeout(() => {
     if (box1) box1.classList.add('is-animated');
     if (box2) box2.classList.add('is-animated');
-  });
+  }, 750);
 
-  // Stagger 3D perspective flip for hero image container
+  // Insert/reveal the image between "Mark" and "Bryan" as the aperture opens (900ms)
   setTimeout(() => {
     if (imageBox) imageBox.classList.add('is-animated');
-  }, 250);
+  }, 900);
 
-  // Resume normal automatic image cycling after initial entrance finishes (1600ms)
+  // Resume normal automatic image cycling after initial entrance has completely finished (2200ms)
   setTimeout(() => {
     startHeroCycle();
-  }, 1600);
+  }, 2200);
 }
 
 if (typeof document !== 'undefined') {
