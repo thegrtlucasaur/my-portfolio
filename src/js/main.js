@@ -1575,20 +1575,20 @@ export async function triggerHomeIntroSequence() {
   // Force reflow so initial state is completely solid
   void document.body.offsetWidth;
 
-  // STAGE 2 & 3: Once "Mark Bryan" text settles upward (~800ms), reveal the image into the reserved slot
+  // STAGE 2 & 3: Once "Mark Bryan" text settles upward (~800ms), reveal the image via 3D flip
   setTimeout(() => {
     if (imageBox) {
       imageBox.classList.add('is-animated');
     }
 
-    // Once image entrance transition finishes and settles (650ms transition + 350ms settle buffer = 1000ms),
+    // Once 3D flip entrance finishes and settles (1100ms transition + 300ms buffer = 1400ms),
     // mark intro finished and start the normal 1500ms hero rotation
     setTimeout(() => {
       isIntroRunning = false;
       if (currentRoute === 'home') {
         startHeroCycle();
       }
-    }, 1000);
+    }, 1400);
   }, 800);
 }
 
