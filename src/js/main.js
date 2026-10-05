@@ -1217,42 +1217,133 @@ export function setupAboutScrollZoom() {
 // ============================================================================
 
 /**
+ * Smoothly steps the numeric percentage (0% -> 100%)
+ * based on genuine initial readiness milestones.
+ * Guaranteed to reach exactly 100%, never exceed 100%,
+ * never stall, and terminate all animation frames cleanly.
+ */
+function createProgressTracker(counterEl) {
+  let displayedVal = 0;
+  let targetVal = 0;
+  let rafId = null;
+  let isFinished = false;
+
+  const updateDisplay = (val) => {
+    if (counterEl) {
+      counterEl.textContent = `${Math.round(val)}%`;
+    }
+  };
+
+  const step = () => {
+    if (displayedVal < targetVal) {
+      const diff = targetVal - displayedVal;
+      const increment = Math.max(1, Math.min(diff * 0.35, 7));
+      displayedVal = Math.min(targetVal, displayedVal + increment);
+      updateDisplay(displayedVal);
+    }
+
+    if (displayedVal < targetVal && !isFinished) {
+      rafId = requestAnimationFrame(step);
+    } else {
+      rafId = null;
+    }
+  };
+
+  return {
+    setTarget(val) {
+      if (val > targetVal && val <= 100) {
+        targetVal = val;
+        if (!rafId && displayedVal < targetVal) {
+          rafId = requestAnimationFrame(step);
+        }
+      }
+    },
+    async finish() {
+      if (isFinished) return;
+      isFinished = true;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
+      // Smoothly advance from current displayedVal to exactly 100%
+      return new Promise((resolve) => {
+        const finalizeStep = () => {
+          if (displayedVal < 100) {
+            const diff = 100 - displayedVal;
+            const inc = Math.max(1, Math.min(diff * 0.4, 8));
+            displayedVal = Math.min(100, displayedVal + inc);
+            updateDisplay(displayedVal);
+            if (displayedVal < 100) {
+              requestAnimationFrame(finalizeStep);
+              return;
+            }
+          }
+          updateDisplay(100);
+          // Hold 100% briefly so the user perceives the completed state
+          setTimeout(resolve, 120);
+        };
+        finalizeStep();
+      });
+    }
+  };
+}
+
+/**
  * Resolves when genuine initial page readiness is reached:
  * - Document fonts ready (Neue Montreal)
  * - Critical above-the-fold asset for the active route (e.g. hero image or about photo)
  * Safeguarded with a strict 700ms timeout so it never hangs or delays perceived performance.
  * Does NOT preload large lazy-loaded poster files.
  */
-async function waitForInitialReadiness(route) {
+async function waitForInitialReadiness(route, tracker) {
+  // Step 1: Document & Fonts readiness
   const fontPromise = (typeof document !== 'undefined' && document.fonts && document.fonts.ready)
-    ? document.fonts.ready
+    ? document.fonts.ready.then(() => {
+        if (tracker) tracker.setTarget(70);
+      }).catch(() => {})
     : Promise.resolve();
 
+  // Step 2: Critical active-route image readiness
   let assetPromise = Promise.resolve();
   if (route === 'home') {
     const heroImg = document.getElementById('heroTitleImg');
     if (heroImg && !heroImg.complete) {
       assetPromise = new Promise((resolve) => {
+        const done = () => {
+          if (tracker) tracker.setTarget(92);
+          resolve();
+        };
         if (typeof heroImg.decode === 'function') {
-          heroImg.decode().then(resolve).catch(resolve);
+          heroImg.decode().then(done).catch(done);
         } else {
-          heroImg.addEventListener('load', resolve, { once: true });
-          heroImg.addEventListener('error', resolve, { once: true });
+          heroImg.addEventListener('load', done, { once: true });
+          heroImg.addEventListener('error', done, { once: true });
         }
       });
+    } else {
+      if (tracker) tracker.setTarget(92);
     }
   } else if (route === 'about') {
     const aboutImg = document.querySelector('.about-photo');
     if (aboutImg && !aboutImg.complete) {
       assetPromise = new Promise((resolve) => {
+        const done = () => {
+          if (tracker) tracker.setTarget(92);
+          resolve();
+        };
         if (typeof aboutImg.decode === 'function') {
-          aboutImg.decode().then(resolve).catch(resolve);
+          aboutImg.decode().then(done).catch(done);
         } else {
-          aboutImg.addEventListener('load', resolve, { once: true });
-          aboutImg.addEventListener('error', resolve, { once: true });
+          aboutImg.addEventListener('load', done, { once: true });
+          aboutImg.addEventListener('error', done, { once: true });
         }
       });
+    } else {
+      if (tracker) tracker.setTarget(92);
     }
+  } else {
+    if (tracker) tracker.setTarget(92);
   }
 
   // Strict timeout safeguard: Never hold the preloader longer than 700ms
@@ -1262,14 +1353,24 @@ async function waitForInitialReadiness(route) {
     Promise.all([fontPromise, assetPromise]),
     timeoutPromise
   ]);
+
+  if (tracker) {
+    await tracker.finish();
+  }
 }
 
 export async function init() {
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const loader = document.getElementById('pageLoader');
+  const counter = document.getElementById('loaderCounter');
 
   if (loader && !prefersReduced) {
     document.body.classList.add('is-loading');
+  }
+
+  const tracker = (counter && !prefersReduced) ? createProgressTracker(counter) : null;
+  if (tracker) {
+    tracker.setTarget(25);
   }
 
   renderFeaturedWork();
@@ -1292,6 +1393,10 @@ export async function init() {
   window.setRouteImmediate = setRouteImmediate;
   window.navigateTo = navigateTo;
 
+  if (tracker) {
+    tracker.setTarget(50);
+  }
+
   if (prefersReduced || !loader) {
     isInitialLoading = false;
     if (loader) loader.remove();
@@ -1303,8 +1408,8 @@ export async function init() {
     return;
   }
 
-  // Await genuine initial page readiness (fonts + critical initial asset)
-  await waitForInitialReadiness(initialRoute);
+  // Await genuine initial page readiness (fonts + critical initial asset + progress tracking to 100%)
+  await waitForInitialReadiness(initialRoute, tracker);
 
   // Trigger exit curtain animation
   requestAnimationFrame(() => {
