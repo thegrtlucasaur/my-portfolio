@@ -213,13 +213,11 @@ ul, ol {
 /* --------------------------------------------------------------------------
    3. INITIAL PAGE PRELOADER & EDITORIAL CURTAIN TRANSITIONS
    Inspired by Matthieu Givelet:
-   - Initial Page Preloader (.loader) with layered neutral curtains:
-     * Layer 1 (.loader-transition-back): #0000003B (23% neutral scrim)
-     * Layer 2 (.loader-transition-block): #FFFFFF (solid canvas curtain)
-     * Exit Animation: White curtain wipes up with cubic-bezier(.76, 0, .47, .95)
+   - Initial Page Preloader (.loader) with solid canvas curtain:
+     * Solid white canvas curtain wipes up with cubic-bezier(.76, 0, .47, .95)
+     * No translucent grey fade or scrim overlay over the page
    - Route Navigation (.transition-overlay):
-     * Layer 1 (.transition-back): #0000003B (23% neutral scrim)
-     * Layer 2 (.transition-block): #FFFFFF (solid canvas curtain)
+     * Solid white canvas curtain wipe with cubic-bezier(.76, 0, .47, .95)
    -------------------------------------------------------------------------- */
 
 /* Preloader Base Surface */
@@ -259,7 +257,6 @@ ul, ol {
 }
 
 .loader-transition,
-.loader-transition-back,
 .loader-transition-block {
   position: absolute;
   top: 0;
@@ -270,10 +267,9 @@ ul, ol {
   height: 100%;
 }
 
+/* Eliminate grey backdrop scrim to ensure clean solid white transition */
 .loader-transition-back {
-  z-index: 0;
-  background: #0000003b;
-  opacity: 1;
+  display: none !important;
 }
 
 .loader-transition-block {
@@ -291,10 +287,6 @@ ul, ol {
   animation: loader-counter 0.65s var(--ease-transition) forwards;
 }
 
-.loader.is-loaded .loader-transition-back {
-  animation: loader-curtain-back 0.65s ease-in-out forwards;
-}
-
 .loader.is-loaded .loader-transition-block {
   animation: loader-curtain-block 0.65s var(--ease-transition) forwards;
 }
@@ -306,15 +298,6 @@ ul, ol {
   }
   100% {
     transform: translateY(-4.5rem);
-    opacity: 0;
-  }
-}
-
-@keyframes loader-curtain-back {
-  0% {
-    opacity: 1;
-  }
-  100% {
     opacity: 0;
   }
 }
@@ -354,22 +337,17 @@ body.is-loading {
   pointer-events: auto;
 }
 
-.transition-back,
+/* Eliminate grey backdrop scrim on page transition as well */
+.transition-back {
+  display: none !important;
+}
+
 .transition-block {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-}
-
-.transition-back {
-  z-index: 0;
-  background: #0000003b;
-  opacity: 0;
-}
-
-.transition-block {
   z-index: 1;
   background: var(--color-background);
   transform: translateY(102%);
@@ -379,16 +357,8 @@ body.is-loading {
   animation: page-curtain-in 0.45s var(--ease-transition) both;
 }
 
-.transition-back.transition-active {
-  animation: page-curtain-back-in 0.45s ease-in-out both;
-}
-
 .transition-block.transition-out {
   animation: page-curtain-out 0.45s var(--ease-transition) both;
-}
-
-.transition-back.transition-out {
-  animation: page-curtain-back-out 0.45s ease-in-out both;
 }
 
 @keyframes page-curtain-in {
@@ -406,24 +376,6 @@ body.is-loading {
   }
   to {
     transform: translateY(-102%);
-  }
-}
-
-@keyframes page-curtain-back-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes page-curtain-back-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
   }
 }
 
