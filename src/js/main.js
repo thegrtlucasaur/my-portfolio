@@ -1227,6 +1227,9 @@ function createProgressTracker(counterEl) {
   let targetVal = 0;
   let rafId = null;
   let isFinished = false;
+  let lastTime = 0;
+  let holdTimeoutId = null;
+  const frameInterval = 16; // ~60fps cadence for consistent visual pacing
 
   const updateDisplay = (val) => {
     if (counterEl) {
@@ -1234,12 +1237,28 @@ function createProgressTracker(counterEl) {
     }
   };
 
-  const step = () => {
-    if (displayedVal < targetVal) {
-      const diff = targetVal - displayedVal;
-      const increment = Math.max(1, Math.min(diff * 0.35, 7));
-      displayedVal = Math.min(targetVal, displayedVal + increment);
-      updateDisplay(displayedVal);
+  /**
+   * Calculates a controlled, intentional numeric step size.
+   * Prevents large leaps across frames while remaining responsive.
+   */
+  const calculateStep = (diff) => {
+    if (diff > 40) return 3;
+    if (diff > 15) return 2;
+    return 1;
+  };
+
+  const step = (now) => {
+    if (!lastTime) lastTime = now;
+    const elapsed = now - lastTime;
+
+    if (elapsed >= frameInterval) {
+      lastTime = now;
+      if (displayedVal < targetVal) {
+        const diff = targetVal - displayedVal;
+        const increment = calculateStep(diff);
+        displayedVal = Math.min(targetVal, displayedVal + increment);
+        updateDisplay(displayedVal);
+      }
     }
 
     if (displayedVal < targetVal && !isFinished) {
@@ -1254,6 +1273,7 @@ function createProgressTracker(counterEl) {
       if (val > targetVal && val <= 100) {
         targetVal = val;
         if (!rafId && displayedVal < targetVal) {
+          lastTime = 0;
           rafId = requestAnimationFrame(step);
         }
       }
@@ -1268,23 +1288,54 @@ function createProgressTracker(counterEl) {
 
       // Smoothly advance from current displayedVal to exactly 100%
       return new Promise((resolve) => {
-        const finalizeStep = () => {
-          if (displayedVal < 100) {
-            const diff = 100 - displayedVal;
-            const inc = Math.max(1, Math.min(diff * 0.4, 8));
-            displayedVal = Math.min(100, displayedVal + inc);
-            updateDisplay(displayedVal);
+        let finalizeLastTime = 0;
+
+        const finalizeStep = (now) => {
+          if (!finalizeLastTime) finalizeLastTime = now;
+          const elapsed = now - finalizeLastTime;
+
+          if (elapsed >= frameInterval) {
+            finalizeLastTime = now;
             if (displayedVal < 100) {
-              requestAnimationFrame(finalizeStep);
-              return;
+              const diff = 100 - displayedVal;
+              const increment = calculateStep(diff);
+              displayedVal = Math.min(100, displayedVal + increment);
+              updateDisplay(displayedVal);
+              if (displayedVal < 100) {
+                rafId = requestAnimationFrame(finalizeStep);
+                return;
+              }
             }
+          } else if (displayedVal < 100) {
+            rafId = requestAnimationFrame(finalizeStep);
+            return;
           }
+
+          // Lock to exactly 100%
+          displayedVal = 100;
           updateDisplay(100);
-          // Hold 100% briefly so the user perceives the completed state
-          setTimeout(resolve, 120);
+          rafId = null;
+
+          // Deliberate hold for 200ms (within 150ms - 250ms range)
+          // allowing the eye to register completion before the exit reveal begins
+          holdTimeoutId = setTimeout(() => {
+            holdTimeoutId = null;
+            resolve();
+          }, 200);
         };
-        finalizeStep();
+
+        rafId = requestAnimationFrame(finalizeStep);
       });
+    },
+    destroy() {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      if (holdTimeoutId) {
+        clearTimeout(holdTimeoutId);
+        holdTimeoutId = null;
+      }
     }
   };
 }
@@ -1293,7 +1344,7 @@ function createProgressTracker(counterEl) {
  * Resolves when genuine initial page readiness is reached:
  * - Document fonts ready (Neue Montreal)
  * - Critical above-the-fold asset for the active route (e.g. hero image or about photo)
- * Safeguarded with a strict 700ms timeout so it never hangs or delays perceived performance.
+ * Safeguarded with a strict 650ms timeout so it never hangs or delays perceived performance.
  * Does NOT preload large lazy-loaded poster files.
  */
 async function waitForInitialReadiness(route, tracker) {
@@ -1346,8 +1397,8 @@ async function waitForInitialReadiness(route, tracker) {
     if (tracker) tracker.setTarget(92);
   }
 
-  // Strict timeout safeguard: Never hold the preloader longer than 700ms
-  const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 700));
+  // Strict timeout safeguard: Never hold the preloader longer than 650ms
+  const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 650));
 
   await Promise.race([
     Promise.all([fontPromise, assetPromise]),
@@ -1420,14 +1471,25 @@ export async function init() {
       startHeroCycle();
     }
 
+    let cleanedUp = false;
     const cleanUpLoader = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      if (tracker && tracker.destroy) {
+        tracker.destroy();
+      }
       if (loader && loader.parentNode) {
         loader.remove();
       }
       document.body.classList.remove('is-loading');
     };
 
-    loader.addEventListener('animationend', cleanUpLoader, { once: true });
+    const curtainBlock = loader.querySelector('.loader-transition-block');
+    if (curtainBlock) {
+      curtainBlock.addEventListener('animationend', cleanUpLoader, { once: true });
+    } else {
+      loader.addEventListener('animationend', cleanUpLoader, { once: true });
+    }
     setTimeout(cleanUpLoader, 750);
   });
 }
