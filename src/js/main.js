@@ -104,6 +104,8 @@ export function getFeaturedProjects() {
 let currentRoute = 'home';
 let isTransitioning = false;
 let isInitialLoading = true;
+let isIntroRunning = false;
+let introHasRun = false;
 
 const routes = {
   '/': 'home',
@@ -154,7 +156,7 @@ export function setRouteImmediate(targetRoute) {
 
   currentRoute = targetRoute;
   if (targetRoute === 'home') {
-    if (!isInitialLoading) {
+    if (!isInitialLoading && !isIntroRunning) {
       const box1 = document.querySelector('.home-title-box-1');
       const box2 = document.querySelector('.home-title-box-2');
       const imageBox = document.querySelector('.home-title-image-box');
@@ -967,6 +969,7 @@ let advanceHeroImage = null;
 export function startHeroCycle() {
   stopHeroCycle();
   if (typeof window === 'undefined') return;
+  if (isInitialLoading || isIntroRunning) return;
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
   if (typeof advanceHeroImage === 'function') {
@@ -993,9 +996,12 @@ export function setupHeroMonogram() {
   ];
 
   // Preload all poster images immediately to guarantee zero flash or empty frames
-  posters.forEach((p) => {
+  posters.forEach((p, idx) => {
     const preloader = new Image();
     preloader.src = p.src;
+    if (idx === 0 && typeof preloader.decode === 'function') {
+      preloader.decode().catch(() => {});
+    }
   });
 
   let currentIndex = 0;
@@ -1016,7 +1022,12 @@ export function setupHeroMonogram() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
       stopHeroCycle();
-    } else if (document.visibilityState === 'visible' && currentRoute === 'home') {
+    } else if (
+      document.visibilityState === 'visible' &&
+      currentRoute === 'home' &&
+      !isInitialLoading &&
+      !isIntroRunning
+    ) {
       startHeroCycle();
     }
   });
@@ -1027,15 +1038,18 @@ export function setupHeroMonogram() {
     motionQuery.addEventListener('change', (e) => {
       if (e.matches) {
         stopHeroCycle();
-      } else if (currentRoute === 'home' && document.visibilityState === 'visible') {
+      } else if (
+        currentRoute === 'home' &&
+        document.visibilityState === 'visible' &&
+        !isInitialLoading &&
+        !isIntroRunning
+      ) {
         startHeroCycle();
       }
     });
   }
 
-  if (currentRoute === 'home') {
-    startHeroCycle();
-  }
+  // NOTE: Normal hero image cycling begins strictly AFTER the post-preloader entrance finishes.
 }
 
 // ----------------------------------------------------------------------------
@@ -1462,6 +1476,8 @@ export async function init() {
 
   if (prefersReduced || !loader) {
     isInitialLoading = false;
+    isIntroRunning = false;
+    introHasRun = true;
     if (loader) loader.remove();
     document.body.classList.remove('is-loading');
     setupScrollAnimations();
@@ -1471,7 +1487,7 @@ export async function init() {
     if (box1) box1.classList.add('is-animated');
     if (box2) box2.classList.add('is-animated');
     if (imageBox) imageBox.classList.add('is-animated');
-    if (initialRoute === 'home') {
+    if (initialRoute === 'home' && !prefersReduced) {
       startHeroCycle();
     }
     return;
@@ -1516,39 +1532,64 @@ export async function init() {
 
 /**
  * Choreographed Post-Preloader Home Entrance inspired by Matthieu Givelet:
- * STAGE 1: Text only - "Mark Bryan" without image visible
- * STAGE 2: "Mark Bryan" reveals upward from below clipping area (1.2s cubic-bezier(.18, .66, .18, 1))
- * STAGE 3: After text establishes, "Mark" and "Bryan" part and image inserts into the gap
- * NORMAL: Hero image automatic 1500ms cycling resumes after entrance finishes
+ * STAGE 1: Text reveal - "Mark" and "Bryan" reveal upward from below clipping area (1.2s cubic-bezier(.18, .66, .18, 1))
+ *          with the image slot reserved in layout between them (initially hidden)
+ * STAGE 2: Text settles cleanly into baseline (~800ms)
+ * STAGE 3: Hero image cleanly pops/reveals into the aperture via subtle 2D scale and translateY
+ * FINAL: Normal 1500ms automatic image cycling begins ONLY after the intro entrance has completely settled
  */
-export function triggerHomeIntroSequence() {
+export async function triggerHomeIntroSequence() {
+  if (introHasRun || isIntroRunning) return;
+  introHasRun = true;
+  isIntroRunning = true;
+  stopHeroCycle();
+
   const box1 = document.querySelector('.home-title-box-1');
   const box2 = document.querySelector('.home-title-box-2');
   const imageBox = document.querySelector('.home-title-image-box');
+  const heroImg = document.getElementById('heroTitleImg');
   const border = document.querySelector('.home-hero .border') || document.querySelector('.infos-box .border');
 
   if (border) {
     border.classList.add('is-revealing');
   }
 
-  // Force reflow so Stage 1 & 2 start cleanly
+  if (box1) box1.classList.add('is-animated');
+  if (box2) box2.classList.add('is-animated');
+
+  // Pre-decode first hero image before entrance to guarantee zero one-frame raster lag
+  if (heroImg) {
+    if (!heroImg.complete) {
+      await new Promise((resolve) => {
+        heroImg.addEventListener('load', resolve, { once: true });
+        heroImg.addEventListener('error', resolve, { once: true });
+      });
+    }
+    if (typeof heroImg.decode === 'function') {
+      try {
+        await heroImg.decode();
+      } catch (_) {}
+    }
+  }
+
+  // Force reflow so initial state is completely solid
   void document.body.offsetWidth;
 
-  // STAGE 3: After "Mark Bryan" has settled upward (750ms), part the text to reveal the aperture
+  // STAGE 2 & 3: Once "Mark Bryan" text settles upward (~800ms), reveal the image into the reserved slot
   setTimeout(() => {
-    if (box1) box1.classList.add('is-animated');
-    if (box2) box2.classList.add('is-animated');
-  }, 750);
+    if (imageBox) {
+      imageBox.classList.add('is-animated');
+    }
 
-  // Insert/reveal the image between "Mark" and "Bryan" as the aperture opens (900ms)
-  setTimeout(() => {
-    if (imageBox) imageBox.classList.add('is-animated');
-  }, 900);
-
-  // Resume normal automatic image cycling after initial entrance has completely finished (2200ms)
-  setTimeout(() => {
-    startHeroCycle();
-  }, 2200);
+    // Once image entrance transition finishes and settles (650ms transition + 350ms settle buffer = 1000ms),
+    // mark intro finished and start the normal 1500ms hero rotation
+    setTimeout(() => {
+      isIntroRunning = false;
+      if (currentRoute === 'home') {
+        startHeroCycle();
+      }
+    }, 1000);
+  }, 800);
 }
 
 if (typeof document !== 'undefined') {
