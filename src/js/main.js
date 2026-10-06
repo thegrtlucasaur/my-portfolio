@@ -10,6 +10,38 @@
 
 export const projects = [
   {
+    id: 'video-01',
+    title: 'Video 01',
+    type: 'video',
+    category: 'Video',
+    detail: 'Video',
+    // Artist and Date intentionally omitted: metadata is unknown
+    thumbnail: 'https://img.youtube.com/vi/Hs9IYRFnbw4/maxresdefault.jpg',
+    image: 'https://img.youtube.com/vi/Hs9IYRFnbw4/maxresdefault.jpg',
+    videoId: 'Hs9IYRFnbw4',
+    videoUrl: 'https://www.youtube.com/watch?v=Hs9IYRFnbw4',
+    embedUrl: 'https://www.youtube.com/embed/Hs9IYRFnbw4',
+    aspect: '16/9',
+    featured: true,
+    alt: 'Video 01 (Hs9IYRFnbw4)'
+  },
+  {
+    id: 'video-02',
+    title: 'Video 02',
+    type: 'video',
+    category: 'Video',
+    detail: 'Video',
+    // Artist and Date intentionally omitted: metadata is unknown
+    thumbnail: 'https://img.youtube.com/vi/PlxLF6Z_oRg/maxresdefault.jpg',
+    image: 'https://img.youtube.com/vi/PlxLF6Z_oRg/maxresdefault.jpg',
+    videoId: 'PlxLF6Z_oRg',
+    videoUrl: 'https://www.youtube.com/watch?v=PlxLF6Z_oRg',
+    embedUrl: 'https://www.youtube.com/embed/PlxLF6Z_oRg',
+    aspect: '16/9',
+    featured: true,
+    alt: 'Video 02 (PlxLF6Z_oRg)'
+  },
+  {
     id: 'oh-yeah',
     title: 'oh yeah?',
     category: 'Poster Design',
@@ -91,10 +123,12 @@ export const projects = [
 
 // Configurable Featured Project Selection on Home
 // Can easily be changed at any time by updating this array
-export const featuredProjectIds = ['oh-yeah', 'undressed'];
+export const featuredProjectIds = ['video-01', 'video-02', 'oh-yeah', 'undressed'];
 
 export function getFeaturedProjects() {
-  return projects.filter(p => featuredProjectIds.includes(p.id));
+  return featuredProjectIds
+    .map(id => projects.find(p => p.id === id))
+    .filter(Boolean);
 }
 
 // ============================================================================
@@ -350,19 +384,36 @@ export function renderFeaturedWork() {
     card.className = 'project-card';
     card.style.setProperty('--stagger-delay', `${index * 0.08}s`);
     card.dataset.id = item.id;
+    if (item.type) card.dataset.type = item.type;
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
-    card.setAttribute('aria-label', `View poster: ${item.title}`);
+    const isVideo = item.type === 'video';
+    card.setAttribute(
+      'aria-label',
+      isVideo ? `Play video: ${item.title}` : `View poster: ${item.title}`
+    );
 
     const numStr = String(index + 1).padStart(2, '0');
     const artistMeta = item.artist ? ` · ${item.artist}` : '';
-    const imgWidth = item.aspect === '4/5' ? 960 : 900;
-    const imgHeight = 1200;
+    const metaRight = item.year
+      ? `${item.year}${artistMeta}`
+      : (item.detail || item.category || '');
+    const imgWidth = item.aspect === '16/9' ? 1280 : (item.aspect === '4/5' ? 960 : 900);
+    const imgHeight = item.aspect === '16/9' ? 720 : 1200;
+    const thumbSrc = item.thumbnail || item.image;
+
+    const playIndicatorHtml = isVideo
+      ? `<div class="video-play-indicator" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="6 3 20 12 6 21"></polygon>
+          </svg>
+        </div>`
+      : '';
 
     card.innerHTML = `
       <div class="project-card-box" style="aspect-ratio: ${item.aspect};">
         <img 
-          src="${item.image}" 
+          src="${thumbSrc}" 
           alt="${item.alt}" 
           class="project-card-image"
           width="${imgWidth}"
@@ -370,6 +421,7 @@ export function renderFeaturedWork() {
           loading="eager"
           decoding="async"
         />
+        ${playIndicatorHtml}
       </div>
       <div class="project-card-title-box">
         <div class="project-card-meta-left">
@@ -377,7 +429,7 @@ export function renderFeaturedWork() {
           <span class="project-card-title"><span class="link-line">${item.title}</span></span>
         </div>
         <div class="project-card-meta-right">
-          <span class="project-card-year">${item.year}${artistMeta}</span>
+          <span class="project-card-year">${metaRight}</span>
           <span class="project-card-arrow" aria-hidden="true">&rarr;</span>
         </div>
       </div>
@@ -410,18 +462,32 @@ export function renderWorkPage() {
     card.className = 'project-card';
     card.style.setProperty('--stagger-delay', `${(index % 2) * 0.08}s`);
     card.dataset.id = item.id;
+    if (item.type) card.dataset.type = item.type;
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
-    card.setAttribute('aria-label', `View poster: ${item.title}`);
+    const isVideo = item.type === 'video';
+    card.setAttribute(
+      'aria-label',
+      isVideo ? `Play video: ${item.title}` : `View poster: ${item.title}`
+    );
 
     const numStr = String(index + 1).padStart(2, '0');
-    const imgWidth = item.aspect === '4/5' ? 960 : 900;
-    const imgHeight = 1200;
+    const imgWidth = item.aspect === '16/9' ? 1280 : (item.aspect === '4/5' ? 960 : 900);
+    const imgHeight = item.aspect === '16/9' ? 720 : 1200;
+    const thumbSrc = item.thumbnail || item.image;
+
+    const playIndicatorHtml = isVideo
+      ? `<div class="video-play-indicator" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="6 3 20 12 6 21"></polygon>
+          </svg>
+        </div>`
+      : '';
 
     card.innerHTML = `
       <div class="project-card-box" style="aspect-ratio: ${item.aspect};">
         <img 
-          src="${item.image}" 
+          src="${thumbSrc}" 
           alt="${item.alt}" 
           class="project-card-image"
           width="${imgWidth}"
@@ -429,6 +495,7 @@ export function renderWorkPage() {
           loading="lazy"
           decoding="async"
         />
+        ${playIndicatorHtml}
       </div>
       <div class="project-card-meta">
         <div class="project-card-meta-left">
@@ -436,12 +503,12 @@ export function renderWorkPage() {
             <span class="project-card-number">${numStr}</span>
             <h2 class="project-card-title"><span class="link-line">${item.title}</span></h2>
           </div>
-          <span class="project-card-category">${item.category}</span>
+          <span class="project-card-category">${item.category || item.detail || ''}</span>
         </div>
         <div class="project-card-meta-right">
           ${item.artist ? `<span class="project-card-artist">${item.artist}</span>` : ''}
           <div class="project-card-year-row">
-            <span class="project-card-year">${item.year}</span>
+            ${item.year ? `<span class="project-card-year">${item.year}</span>` : ''}
             <span class="project-card-arrow" aria-hidden="true">&rarr;</span>
           </div>
         </div>
@@ -475,21 +542,28 @@ export function renderArchivePage() {
     row.className = 'archive-list-el stagger-el';
     row.style.setProperty('--stagger-delay', `${index * 0.03}s`);
     row.dataset.id = item.id;
-    row.dataset.preview = item.image;
+    if (item.type) row.dataset.type = item.type;
+    row.dataset.aspect = item.aspect || '3/4';
+    const thumbSrc = item.thumbnail || item.image;
+    row.dataset.preview = thumbSrc;
     row.tabIndex = 0;
     row.setAttribute('role', 'button');
-    row.setAttribute('aria-label', `Poster project: ${item.title}`);
+    const isVideo = item.type === 'video';
+    row.setAttribute(
+      'aria-label',
+      isVideo ? `Video project: ${item.title}` : `Poster project: ${item.title}`
+    );
 
     const numStr = String(index + 1).padStart(2, '0');
-    // For missing artist, display completely empty string — no "None", "N/A", or "Unknown"
-    const artistText = item.artist ? item.artist : '';
+    // For items without artist or detail, display completely empty string — no "None", "N/A", or "Unknown"
+    const detailText = item.detail || item.artist || '';
 
     row.innerHTML = `
       <div class="archive-list-text">
         <div class="archive-name">
           <div class="archive-mobile-thumb-wrap">
             <img 
-              src="${item.image}" 
+              src="${thumbSrc}" 
               alt="${item.title}" 
               class="archive-mobile-thumb" 
               loading="lazy" 
@@ -499,8 +573,8 @@ export function renderArchivePage() {
             <span class="archive-title">${item.title}</span>
           </div>
         </div>
-        <div class="archive-detail">${artistText}</div>
-        <div class="archive-date list-last-el">${item.year}</div>
+        <div class="archive-detail">${detailText}</div>
+        <div class="archive-date list-last-el">${item.year || ''}</div>
       </div>
     `;
 
@@ -540,9 +614,11 @@ export function setupArchiveHover() {
     isMoving = false;
     if (!activeRow) return;
 
+    const isVideo = activeRow.dataset.type === 'video' || activeRow.dataset.aspect === '16/9';
     const offset = 24;
-    const boxW = 220;
-    const boxH = 290;
+    // For 16:9 video: 260x146px; for 3:4 posters: 220x290px
+    const boxW = isVideo ? 260 : 220;
+    const boxH = isVideo ? 146 : 290;
 
     let posX = mouseX + offset;
     let posY = mouseY - (boxH / 2);
@@ -568,6 +644,9 @@ export function setupArchiveHover() {
       if (imgSrc && previewImg.src !== imgSrc) {
         previewImg.src = imgSrc;
       }
+      const isVideo = row.dataset.type === 'video' || row.dataset.aspect === '16/9';
+      previewBox.classList.toggle('is-video', isVideo);
+
       previewBox.classList.add('is-active');
       mouseX = e.clientX;
       mouseY = e.clientY;
@@ -587,13 +666,13 @@ export function setupArchiveHover() {
     row.addEventListener('mouseleave', () => {
       row.classList.remove('is-hover');
       activeRow = null;
-      previewBox.classList.remove('is-active');
+      previewBox.classList.remove('is-active', 'is-video');
     });
   });
 
   window.addEventListener('scroll', () => {
     activeRow = null;
-    previewBox.classList.remove('is-active');
+    previewBox.classList.remove('is-active', 'is-video');
     document.querySelectorAll('.archive-list-el.is-hover').forEach(el => el.classList.remove('is-hover'));
   }, { passive: true });
 }
@@ -726,18 +805,48 @@ let lastActiveElement = null;
 export function openLightbox(project) {
   const lightbox = document.getElementById('projectLightbox');
   const img = document.getElementById('lightboxImg');
+  const videoWrap = document.getElementById('lightboxVideoWrap');
   const closeBtn = document.getElementById('lightboxCloseBtn');
 
-  if (!lightbox || !img || !project) return;
+  if (!lightbox || !project) return;
 
   lastActiveElement = document.activeElement;
 
-  const fullSource = project.fullImage || project.image || '';
-  img.src = fullSource;
-  img.alt = project.alt || project.title || 'Project poster';
-
-  if (project.originalImage) {
-    img.dataset.original = project.originalImage;
+  if (project.type === 'video' || project.videoId) {
+    if (img) {
+      img.style.display = 'none';
+      img.src = '';
+    }
+    if (videoWrap) {
+      videoWrap.style.display = 'block';
+      const embedSrc = project.embedUrl || `https://www.youtube.com/embed/${project.videoId}`;
+      videoWrap.innerHTML = `
+        <iframe 
+          class="lightbox-video-iframe"
+          src="${embedSrc}?autoplay=1&rel=0" 
+          title="${project.title || 'Video'}"
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen
+        ></iframe>
+      `;
+    }
+    lightbox.setAttribute('aria-label', `Video player: ${project.title || 'Video'}`);
+  } else {
+    if (videoWrap) {
+      videoWrap.style.display = 'none';
+      videoWrap.innerHTML = '';
+    }
+    if (img) {
+      img.style.display = 'block';
+      const fullSource = project.fullImage || project.image || project.thumbnail || '';
+      img.src = fullSource;
+      img.alt = project.alt || project.title || 'Project poster';
+      if (project.originalImage) {
+        img.dataset.original = project.originalImage;
+      }
+    }
+    lightbox.setAttribute('aria-label', `Poster viewer: ${project.title || 'Poster'}`);
   }
 
   lightbox.classList.add('is-open');
@@ -751,7 +860,20 @@ export function openLightbox(project) {
 
 export function closeLightbox() {
   const lightbox = document.getElementById('projectLightbox');
+  const videoWrap = document.getElementById('lightboxVideoWrap');
+  const img = document.getElementById('lightboxImg');
+
   if (!lightbox || !lightbox.classList.contains('is-open')) return;
+
+  // Immediately stop and unmount any playing YouTube iframe
+  if (videoWrap) {
+    videoWrap.innerHTML = '';
+    videoWrap.style.display = 'none';
+  }
+  if (img) {
+    img.src = '';
+    img.style.display = 'none';
+  }
 
   lightbox.classList.remove('is-open');
   lightbox.setAttribute('aria-hidden', 'true');

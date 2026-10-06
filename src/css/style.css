@@ -1542,6 +1542,44 @@ html.has-motion .home-title-image-box.is-animated {
   transform: scale(1.02);
 }
 
+.project-card[data-type="video"] .project-card-image {
+  object-fit: cover;
+}
+
+/* Minimal Monochrome Editorial Play Indicator */
+.video-play-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  transition: transform 0.6s var(--ease-spring), background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  will-change: transform;
+}
+
+.video-play-indicator svg {
+  margin-left: 2px;
+  display: block;
+}
+
+.project-card:hover .video-play-indicator,
+.project-card:focus-visible .video-play-indicator {
+  transform: translate(-50%, -50%) scale(1.08);
+  background-color: #000000;
+  color: #FFFFFF;
+  border-color: #000000;
+}
+
 /* Home Featured Grid compatibility fallback */
 .project-card-title-box {
   display: flex;
@@ -1845,6 +1883,11 @@ html.has-motion .home-title-image-box.is-animated {
   opacity: 1;
 }
 
+.archive-floating-preview.is-video {
+  width: 260px;
+  height: 146px;
+}
+
 .archive-floating-img {
   width: 100%;
   height: 100%;
@@ -1890,6 +1933,12 @@ html.has-motion .home-title-image-box.is-animated {
     border-radius: var(--radius-xs);
     border: 1px solid var(--color-border);
     flex-shrink: 0;
+  }
+
+  .archive-list-el[data-type="video"] .archive-mobile-thumb {
+    width: 60px;
+    height: 34px;
+    aspect-ratio: 16 / 9;
   }
 
   .archive-floating-preview {
@@ -2632,6 +2681,33 @@ html.has-motion .home-title-image-box.is-animated {
   height: auto;
   object-fit: contain;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-video-wrap {
+  width: min(90vw, calc(86vh * 16 / 9), 1080px);
+  aspect-ratio: 16 / 9;
+  position: relative;
+  background: #000000;
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-video-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .lightbox-video-wrap {
+    width: 95vw;
+    border-radius: var(--radius-xs);
+  }
 }
 
 /* --------------------------------------------------------------------------
