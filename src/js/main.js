@@ -301,6 +301,8 @@ export function navigateTo(targetRoute, updateHistory = true) {
 
   // Two-layer curtain animation:
   // Step 1: Curtain slides in from bottom, backdrop fades in (450ms)
+  overlay.style.display = 'block';
+  void overlay.offsetWidth;
   overlay.classList.add('transition');
   curtainBlock?.classList.remove('transition-out');
   curtainBack?.classList.remove('transition-out');
@@ -319,6 +321,7 @@ export function navigateTo(targetRoute, updateHistory = true) {
 
     setTimeout(() => {
       overlay.classList.remove('transition');
+      overlay.style.display = 'none';
       curtainBlock?.classList.remove('transition-out');
       curtainBack?.classList.remove('transition-out');
       isTransitioning = false;
@@ -849,6 +852,8 @@ export function openLightbox(project) {
     lightbox.setAttribute('aria-label', `Poster viewer: ${project.title || 'Poster'}`);
   }
 
+  lightbox.style.display = 'flex';
+  void lightbox.offsetWidth; // Force layout reflow before opacity transition
   lightbox.classList.add('is-open');
   lightbox.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
@@ -879,6 +884,12 @@ export function closeLightbox() {
   lightbox.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
 
+  setTimeout(() => {
+    if (!lightbox.classList.contains('is-open')) {
+      lightbox.style.display = 'none';
+    }
+  }, 250);
+
   if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
     lastActiveElement.focus();
   }
@@ -891,11 +902,24 @@ export function setupLightbox() {
 
   if (!lightbox) return;
 
+  // Guarantee strict initial closed state
+  lightbox.classList.remove('is-open');
+  lightbox.style.display = 'none';
+  lightbox.setAttribute('aria-hidden', 'true');
+
   if (closeBtn) {
     closeBtn.addEventListener('click', closeLightbox);
+    closeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closeLightbox();
+    }, { passive: false });
   }
   if (backdrop) {
     backdrop.addEventListener('click', closeLightbox);
+    backdrop.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closeLightbox();
+    }, { passive: false });
   }
 
   lightbox.addEventListener('click', (e) => {
@@ -926,6 +950,8 @@ export function toggleMobileDrawer() {
   if (isOpen) {
     closeMobileDrawer();
   } else {
+    drawer.style.display = 'block';
+    void drawer.offsetWidth;
     drawer.classList.add('is-open');
     toggleBtn.classList.add('is-open');
     toggleBtn.setAttribute('aria-expanded', 'true');
@@ -946,6 +972,12 @@ export function closeMobileDrawer() {
     toggleBtn.classList.remove('is-open');
     toggleBtn.setAttribute('aria-expanded', 'false');
   }
+
+  setTimeout(() => {
+    if (!drawer.classList.contains('is-open')) {
+      drawer.style.display = 'none';
+    }
+  }, 500);
 }
 
 export function setupMobileNav() {
@@ -954,14 +986,28 @@ export function setupMobileNav() {
   const closeBtn = document.getElementById('mobileDrawerCloseBtn');
   const drawer = document.getElementById('mobileDrawer');
 
+  if (!drawer) return;
+
+  // Guarantee strict initial closed state
+  drawer.classList.remove('is-open');
+  drawer.style.display = 'none';
+
   if (toggleBtn) {
     toggleBtn.addEventListener('click', toggleMobileDrawer);
   }
   if (overlay) {
     overlay.addEventListener('click', closeMobileDrawer);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closeMobileDrawer();
+    }, { passive: false });
   }
   if (closeBtn) {
     closeBtn.addEventListener('click', closeMobileDrawer);
+    closeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closeMobileDrawer();
+    }, { passive: false });
   }
 
   // Ensure any click on links inside mobile drawer closes it
@@ -1629,6 +1675,11 @@ export async function init() {
   setupArchiveHover();
   setupLightbox();
   setupMobileNav();
+  const transitionOverlay = document.getElementById('transitionOverlay');
+  if (transitionOverlay) {
+    transitionOverlay.style.display = 'none';
+    transitionOverlay.classList.remove('transition');
+  }
   setupContactForm();
   setupCustomCursor();
   setupHeroMonogram();

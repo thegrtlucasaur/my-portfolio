@@ -324,6 +324,7 @@ body.is-loading {
 }
 
 .transition-overlay {
+  display: none;
   visibility: hidden;
   position: fixed;
   z-index: 99990;
@@ -335,6 +336,7 @@ body.is-loading {
 }
 
 .transition-overlay.transition {
+  display: block;
   visibility: visible;
   pointer-events: auto;
 }
@@ -983,6 +985,7 @@ button:hover .link-line::before,
    -------------------------------------------------------------------------- */
 .burger-mobile {
   overflow: hidden;
+  display: none;
   visibility: hidden;
   position: fixed;
   z-index: 100000;
@@ -1005,6 +1008,7 @@ button:hover .link-line::before,
 }
 
 .burger-mobile.is-open {
+  display: block;
   visibility: visible;
   pointer-events: auto;
 }
@@ -2616,7 +2620,7 @@ html.has-motion .home-title-image-box.is-animated {
   width: 100%;
   height: 100%;
   z-index: 100000;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   opacity: 0;
@@ -2626,6 +2630,7 @@ html.has-motion .home-title-image-box.is-animated {
 }
 
 .project-lightbox.is-open {
+  display: flex;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
