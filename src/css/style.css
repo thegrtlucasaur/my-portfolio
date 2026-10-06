@@ -471,7 +471,8 @@ html.has-motion .border {
 }
 
 html.has-motion .border.is-revealed,
-html.has-motion .border.is-revealing {
+html.has-motion .border.is-revealing,
+html.has-motion .border.is-visible {
   transform: scaleX(1);
 }
 
@@ -479,7 +480,7 @@ html.has-motion .border.is-revealing {
 html.has-motion .scroll-in {
   display: inline-block;
   transform: translateY(20px);
-  opacity: 0.35;
+  opacity: 0;
   transition:
     transform 0.75s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s),
     opacity 0.75s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s);
@@ -492,51 +493,37 @@ html.has-motion .text-box.is-masking .scroll-in {
 }
 
 html.has-motion .scroll-in.is-revealed,
-html.has-motion .scroll-in.is-revealing {
+html.has-motion .scroll-in.is-revealing,
+html.has-motion .scroll-in.is-visible {
   transform: translateY(0);
   opacity: 1;
 }
 
 /* 3. Project Cards (.project-card) */
 html.has-motion .project-card {
-  transform: translateY(24px);
-  opacity: 0.35;
+  transform: translateY(20px);
+  opacity: 0;
   transition:
     transform 0.8s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s),
     opacity 0.8s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s);
   will-change: transform, opacity;
 }
 
-html.has-motion .project-card.is-revealed {
+html.has-motion .project-card.is-revealed,
+html.has-motion .project-card.is-visible {
   transform: translateY(0);
   opacity: 1;
 }
 
-/* Project Card Image entrance within clipped container */
-html.has-motion .project-card-box {
-  overflow: clip;
-}
-
-html.has-motion .project-card .project-card-image {
-  transform: translateY(6%);
-  transition: transform 0.9s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s);
-  will-change: transform;
-}
-
-html.has-motion .project-card.is-revealed .project-card-image {
-  transform: translateY(0);
-}
-
-/* Hover override for revealed project card images */
-html.has-motion .project-card.is-revealed:hover .project-card-image {
-  transform: scale(1.02);
-  transition: transform 1s cubic-bezier(0.21, 0.83, 0.27, 1.01);
+/* Ensure project card artwork is always at 100% full opacity — no wash, no overlay */
+.project-card .project-card-image {
+  opacity: 1 !important;
 }
 
 /* 4. Archive Rows (.archive-list-el) */
 html.has-motion .archive-list-el {
   transform: translateY(16px);
-  opacity: 0.35;
+  opacity: 0;
   transition:
     transform 0.65s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s),
     opacity 0.65s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s),
@@ -544,7 +531,8 @@ html.has-motion .archive-list-el {
   will-change: transform, opacity;
 }
 
-html.has-motion .archive-list-el.is-revealed {
+html.has-motion .archive-list-el.is-revealed,
+html.has-motion .archive-list-el.is-visible {
   transform: translateY(0);
   opacity: 1;
 }
@@ -552,14 +540,15 @@ html.has-motion .archive-list-el.is-revealed {
 /* 5. About Photo Wrapper (.about-photo-wrapper) */
 html.has-motion .about-photo-wrapper {
   transform: translateY(24px);
-  opacity: 0.35;
+  opacity: 0;
   transition:
     transform 0.85s cubic-bezier(0.18, 0.66, 0.18, 1),
     opacity 0.85s cubic-bezier(0.18, 0.66, 0.18, 1);
   will-change: transform, opacity;
 }
 
-html.has-motion .about-photo-wrapper.is-revealed {
+html.has-motion .about-photo-wrapper.is-revealed,
+html.has-motion .about-photo-wrapper.is-visible {
   transform: translateY(0);
   opacity: 1;
 }
@@ -568,7 +557,7 @@ html.has-motion .about-photo-wrapper.is-revealed {
 html.has-motion .footer-col,
 html.has-motion .footer-credit {
   transform: translateY(20px);
-  opacity: 0.35;
+  opacity: 0;
   transition:
     transform 0.75s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s),
     opacity 0.75s cubic-bezier(0.18, 0.66, 0.18, 1) var(--stagger-delay, 0s);
@@ -576,7 +565,13 @@ html.has-motion .footer-credit {
 }
 
 html.has-motion .footer.is-revealed .footer-col,
-html.has-motion .footer.is-revealed .footer-credit {
+html.has-motion .footer.is-revealed .footer-credit,
+html.has-motion .footer.is-visible .footer-col,
+html.has-motion .footer.is-visible .footer-credit,
+html.has-motion .footer-col.is-revealed,
+html.has-motion .footer-col.is-visible,
+html.has-motion .footer-credit.is-revealed,
+html.has-motion .footer-credit.is-visible {
   transform: translateY(0);
   opacity: 1;
 }

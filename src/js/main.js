@@ -348,6 +348,7 @@ export function renderFeaturedWork() {
   featured.forEach((item, index) => {
     const card = document.createElement('article');
     card.className = 'project-card';
+    card.style.setProperty('--stagger-delay', `${index * 0.08}s`);
     card.dataset.id = item.id;
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
@@ -406,8 +407,8 @@ export function renderWorkPage() {
 
   projects.forEach((item, index) => {
     const card = document.createElement('article');
-    card.className = 'project-card stagger-el';
-    card.style.setProperty('--stagger-delay', `${index * 0.05}s`);
+    card.className = 'project-card';
+    card.style.setProperty('--stagger-delay', `${(index % 2) * 0.08}s`);
     card.dataset.id = item.id;
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
@@ -612,59 +613,107 @@ export function setupScrollAnimations() {
 
   const groups = document.querySelectorAll('.scroll-in-group');
   const borders = document.querySelectorAll('.border');
+  const projectCards = document.querySelectorAll('.project-card');
+  const archiveRows = document.querySelectorAll('.archive-list-el');
+  const aboutPhotos = document.querySelectorAll('.about-photo-wrapper');
+  const footers = document.querySelectorAll('.footer');
 
   function revealGroup(group) {
     group.classList.add('is-animating');
     group.querySelectorAll('.scroll-in').forEach((el, index) => {
       el.style.setProperty('--stagger-delay', `${index * 0.08}s`);
-      el.classList.add('is-revealing');
+      el.classList.add('is-revealing', 'is-revealed', 'is-visible');
     });
   }
 
   function revealBorder(border) {
-    border.classList.add('is-revealing');
+    border.classList.add('is-revealing', 'is-revealed', 'is-visible');
+  }
+
+  function revealProjectCard(card) {
+    card.classList.add('is-revealed', 'is-visible');
+  }
+
+  function revealArchiveRow(row) {
+    row.classList.add('is-revealed', 'is-visible');
+  }
+
+  function revealAboutPhoto(photo) {
+    photo.classList.add('is-revealed', 'is-visible');
+  }
+
+  function revealFooter(footer) {
+    footer.classList.add('is-revealed', 'is-visible');
+    footer.querySelectorAll('.footer-col, .footer-credit').forEach((el, index) => {
+      el.style.setProperty('--stagger-delay', `${index * 0.08}s`);
+      el.classList.add('is-revealed', 'is-visible');
+    });
   }
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
 
-      if (entry.target.classList.contains('scroll-in-group')) {
-        revealGroup(entry.target);
-      } else if (entry.target.classList.contains('border')) {
-        revealBorder(entry.target);
+      const target = entry.target;
+      if (target.classList.contains('scroll-in-group')) {
+        revealGroup(target);
+      } else if (target.classList.contains('border')) {
+        revealBorder(target);
+      } else if (target.classList.contains('project-card')) {
+        revealProjectCard(target);
+      } else if (target.classList.contains('archive-list-el')) {
+        revealArchiveRow(target);
+      } else if (target.classList.contains('about-photo-wrapper')) {
+        revealAboutPhoto(target);
+      } else if (target.classList.contains('footer')) {
+        revealFooter(target);
       }
 
-      observer.unobserve(entry.target);
+      observer.unobserve(target);
     });
   }, {
     threshold: 0.05,
     rootMargin: '0px 0px 80px 0px'
   });
 
-  groups.forEach((group) => {
-    // If element is already in viewport or near top, reveal immediately!
-    const rect = group.getBoundingClientRect();
+  function observeOrReveal(el, revealFn) {
+    const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight + 50 && rect.bottom > -50) {
-      revealGroup(group);
+      revealFn(el);
     } else {
-      observer.observe(group);
+      observer.observe(el);
     }
-  });
+  }
 
-  borders.forEach((border) => {
-    const rect = border.getBoundingClientRect();
-    if (rect.top < window.innerHeight + 50 && rect.bottom > -50) {
-      revealBorder(border);
-    } else {
-      observer.observe(border);
-    }
-  });
+  groups.forEach((g) => observeOrReveal(g, revealGroup));
+  borders.forEach((b) => observeOrReveal(b, revealBorder));
+  projectCards.forEach((c) => observeOrReveal(c, revealProjectCard));
+  archiveRows.forEach((r) => observeOrReveal(r, revealArchiveRow));
+  aboutPhotos.forEach((p) => observeOrReveal(p, revealAboutPhoto));
+  footers.forEach((f) => observeOrReveal(f, revealFooter));
 
   // Fail-Safe Fallback: after 350ms, guarantee all elements in active view are fully visible!
   setTimeout(() => {
-    document.querySelectorAll('.view-section.is-active .scroll-in-group').forEach(revealGroup);
-    document.querySelectorAll('.view-section.is-active .border').forEach(revealBorder);
+    const activeView = document.querySelector('.view-section.is-active');
+    if (activeView) {
+      activeView.querySelectorAll('.scroll-in-group').forEach(revealGroup);
+      activeView.querySelectorAll('.border').forEach(revealBorder);
+      activeView.querySelectorAll('.project-card').forEach(revealProjectCard);
+      activeView.querySelectorAll('.archive-list-el').forEach(revealArchiveRow);
+      activeView.querySelectorAll('.about-photo-wrapper').forEach(revealAboutPhoto);
+    }
+    projectCards.forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+        revealProjectCard(card);
+      }
+    });
+    footers.forEach((footer) => {
+      const rect = footer.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 100) {
+        revealFooter(footer);
+      }
+    });
   }, 350);
 }
 
