@@ -868,7 +868,7 @@ export function closeLightbox() {
   const videoWrap = document.getElementById('lightboxVideoWrap');
   const img = document.getElementById('lightboxImg');
 
-  if (!lightbox || !lightbox.classList.contains('is-open')) return;
+  if (!lightbox) return;
 
   // Immediately stop and unmount any playing YouTube iframe
   if (videoWrap) {
@@ -892,6 +892,7 @@ export function closeLightbox() {
 
   if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
     lastActiveElement.focus();
+    lastActiveElement = null;
   }
 }
 
@@ -1024,6 +1025,12 @@ export function setupMobileNav() {
       closeMobileDrawer();
     }
   });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768 && drawer.classList.contains('is-open')) {
+      closeMobileDrawer();
+    }
+  }, { passive: true });
 }
 
 // ============================================================================
