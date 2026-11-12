@@ -1,7 +1,5 @@
     # Matthieu Givelet Portfolio Design System
 
-    ![Hero Viewport (1440x900)](images/hero-light.png)
-    ![Full Page Capture](images/full-page.png)
 
     ## 1. Visual Theme & Atmosphere
 
@@ -19,7 +17,7 @@ on drop shadows, heavy cards, or colorful decoration, the interface uses abundan
 
     ### Key Characteristics
     - Stark monochrome foundation (#FFFFFF background, #000000 text) with razor-sharp black-and-white contrast.
-    - Single electric neon accent (#FFFB24) reserved exclusively for title image container highlights.
+    - Strictly monochromatic palette, with no yellow or chromatic accent colors.
     - Fluid viewport-based typography (`vw` units combined with `clamp()`) creating scale-invariant editorial
 
 hierarchy.  
@@ -48,9 +46,8 @@ posture without a dark mode toggle or `prefers-color-scheme` variant.
   card-title`, `.home-title-letter` |
 
     ### Accent
-    | Hex | Role | Where seen |
-    | --- | --- | --- |
-    | `#FFFB24` | Electric yellow highlight | `.work-title-image` background placeholder / highlight block |
+
+    None. The interface uses no chromatic accent; project images retain their original colors.
 
     ### Semantic
     | Hex | Role | Where seen |
@@ -76,8 +73,7 @@ shadow inset |
     ### Notes
     Color is deliberately restricted to maximize typographic focus and showcase project photography without chromatic
 
-competition. Pure `#000000` is used for all text content and kinetic underlines. The singular chromatic pop  
- `#FFFB24` (fluorescent lemon) is strictly utilitarian, marking image thumbnail placeholders in the work directory.
+competition. Pure `#000000` is used for all text content and kinetic underlines. No chromatic accent colors are used; the project imagery supplies its own color.
 No semantic status colors (green/red) are utilized; communication is conveyed purely through text labels and counts.
 
     ## 3. Typography Rules
@@ -134,7 +130,7 @@ cohesion.
 
     ### Navigation Links
     - **Links with Raised Editorial Counts**:
-      - Links for `Work` and `Archive` feature raised superscript project counts (`(8)`, `(16)`), while `About` has no count.
+      - Links for `Work` and `Archive` feature raised superscript project counts (`(8)`, `(8)`), while `About` has no count.
       - HTML structure: `<span class="nav-link-label link-line">Work</span><span class="nav-link-count" aria-label="8 projects">(8)</span>`
       - Positioning & Scale: `position: relative; top: 0; margin-left: 0.08em; font-size: 0.48em; line-height: 1; align-items: flex-start;`
       - Underline Behavior: The animated underline (`.link-line::before`) belongs strictly to the navigation label; the raised count is visually attached to the word shoulder and is not independently underlined or animated.
@@ -161,7 +157,7 @@ WhatsApp deep links.
 
     ### Navigation
     - **Desktop Navigation**:
-      - Three-part split header: Left anchor (`©MatthieuGivelet`), center pill container (`Work (8)`, `Archive (16)`,
+      - Three-part split header: Left anchor (`©MatthieuGivelet`), center pill container (`Work (8)`, `Archive (8)`,
 
 `About`), right contact button (`Get in touch`).  
  - Centering: `.nav-links-wrapper` absolutely positioned at `left: 50%`, `transform: translateX(-50%)`.  
@@ -310,7 +306,6 @@ crisp aspect ratio without layout shift using CSS `overflow: clip` and `border-r
     #FFFFFF  // surface.base / primary background
     #000000  // text.primary / brand black
     #0000001A  // border.subtle (10% opacity hairline)
-    #FFFB24  // accent.highlight (electric yellow thumbnail background)
     #00000022  // surface.scrim-subtle (13% opacity drawer backdrop)
     #0000003B  // surface.scrim-deep (23% opacity transition block)
     #00000061  // border.active-row (38% opacity archive divider)
@@ -346,14 +341,12 @@ crisp aspect ratio without layout shift using CSS `overflow: clip` and `border-r
 • Adjusting Negative Space: Keep desktop page container padding at 2.5vw and mobile at 4vw. If tightening layout  
  for denser information architecture, reduce section vertical padding from 5vw to 3vw, but preserve the 3px fixed  
  gutter in the project grid.  
- • Modifying Accent Tones: Replace #FFFB24 with any high-chroma neon (e.g. electric lime #39FF14 or cyan #00F0FF)  
- for image thumbnail placeholders without disrupting the monochrome foundation. Never apply high-chroma accents to  
- body text or background surfaces.  
- • Introducing Dark Mode: If creating an inverted variant, map #FFFFFF to #0B0B0B, #000000 to #F5F5F5, and hairline
+ • Accent Colors: Keep the interface monochromatic and use the original project imagery for color. Do not add yellow or other accent colors.  
+  • Introducing Dark Mode: If creating an inverted variant, map #FFFFFF to #0B0B0B, #000000 to #F5F5F5, and hairline
 border #0000001A to #FFFFFF1F (12% white). Keep easing curves and border radii identical.  
  • Maintaining Motion Rigor: Always pair entrance animations with cubic-bezier(.18, .66, .18, 1) and interactive  
  hovers with cubic-bezier(.21, .83, .27, 1.01). Avoid generic ease-in-out curves.
 
     The file is saved on disk at:
     - **`design.md`**: design.md
-    - **Screenshots**:  (hero-light.png, full-page.png)
+    - **Screenshots**: Not included in this repository.

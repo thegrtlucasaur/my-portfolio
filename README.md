@@ -1,51 +1,43 @@
 # Portfolio Website
 
-A fast, responsive, and editorial portfolio website built with clean HTML, Modern CSS, and Vanilla JavaScript, powered by Vite.
+A responsive editorial portfolio built with HTML, CSS, and vanilla JavaScript, powered by Vite.
 
 ## Project Structure
 
-```
+```text
 my-portfolio/
-├── index.html           # Main HTML entry point
-├── package.json         # Project configuration and Vite scripts
+├── index.html
+├── package.json
+├── vite.config.js
+├── design.md
 ├── public/
-│   └── images/          # Static assets (project screenshots, posters, videos)
-├── src/
-│   ├── css/
-│   │   └── style.css    # Clean, responsive CSS with design tokens
-│   └── js/
-│       └── main.js      # Vanilla JS for dynamic work rendering & category filtering
-└── README.md            # Documentation & customization guide
+│   ├── assets/
+│   │   ├── about/profile.jpg
+│   │   ├── icons/
+│   │   └── posters/featured/  # WebP images served by the site
+│   └── fonts/
+├── source-assets/
+│   └── posters/               # Original PNG files, kept out of the site build
+└── src/
+    ├── css/style.css
+    └── js/main.js
 ```
 
 ## Getting Started
 
-### 1. Install Dependencies
-```bash
-npm install
-```
+Install dependencies with `npm install`, then run `npm run dev` to start the local Vite server.
 
-### 2. Run Local Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Available scripts:
 
-### 3. Build for Production
-```bash
-npm run build
-```
-The optimized static build will be generated in `dist/`.
+- `npm run dev` — start the development server.
+- `npm run build` — create the production site in `dist/`.
+- `npm run preview` — preview the production build locally.
 
-### 4. Preview Production Build
-```bash
-npm run preview
-```
+## Content and Assets
 
-## How to Customize
-
-- **Name & Hero Text**: Edit the headline and subtitle in [index.html](file:///Users/thegrtlcs/Documents/Projects/my-portfolio/index.html).
-- **Projects / Selected Works**: Update the `projects` array in [src/js/main.js](file:///Users/thegrtlcs/Documents/Projects/my-portfolio/src/js/main.js). You can change titles, years, categories (`poster`, `graphic`, `video`), and color themes.
-- **Images**: Add real project images into `public/images/`.
-- **About Bio & Skills**: Edit the paragraphs and list items under `<section id="about">` in `index.html`.
-- **Contact Details**: Update the email address and social links in `<footer id="contact">` in `index.html`.
+- Edit the page content and contact details in `index.html`.
+- Edit project entries in the `projects` array in `src/js/main.js`. Work contains six poster designs and two videos; Archive lists all eight items.
+- Runtime poster images are optimized WebP files in `public/assets/posters/featured/`.
+- Original poster PNGs are kept in `source-assets/posters/` and are not served or copied into the production build.
+- The About profile image is `public/assets/about/profile.jpg`.
+- The contact form validates the inquiry and opens a prefilled email in the visitor's email app. The visitor still needs to send it from that app.

@@ -49,7 +49,6 @@ export const projects = [
     year: '2026',
     image: '/assets/posters/featured/oh-yeah-steve-lacy.webp',
     fullImage: '/assets/posters/featured/oh-yeah-steve-lacy-full.webp',
-    originalImage: '/assets/posters/featured/oh-yeah-steve-lacy.png',
     aspect: '4/5',
     featured: true,
     alt: 'oh yeah? - Steve Lacy poster design (2026)'
@@ -62,7 +61,6 @@ export const projects = [
     year: '2025',
     image: '/assets/posters/featured/Multo.webp',
     fullImage: '/assets/posters/featured/Multo-full.webp',
-    originalImage: '/assets/posters/featured/Multo.png',
     aspect: '3/4',
     featured: false,
     alt: 'Multo - Cup of Joe poster design (2025)'
@@ -75,7 +73,6 @@ export const projects = [
     year: '2025',
     image: '/assets/posters/featured/undressed.webp',
     fullImage: '/assets/posters/featured/undressed-full.webp',
-    originalImage: '/assets/posters/featured/undressed.png',
     aspect: '3/4',
     featured: true,
     alt: 'Undressed - Sombr poster design (2025)'
@@ -88,7 +85,6 @@ export const projects = [
     year: '2025',
     image: '/assets/posters/featured/captcha.webp',
     fullImage: '/assets/posters/featured/captcha-full.webp',
-    originalImage: '/assets/posters/featured/captcha.png',
     aspect: '3/4',
     featured: false,
     alt: 'captcha - Poster design (2025)'
@@ -101,7 +97,6 @@ export const projects = [
     year: '2025',
     image: '/assets/posters/featured/it%20it%20loss%3F.webp',
     fullImage: '/assets/posters/featured/it%20it%20loss%3F-full.webp',
-    originalImage: '/assets/posters/featured/it%20it%20loss%3F.png',
     aspect: '3/4',
     featured: false,
     alt: 'its it loss? - Poster design (2025)'
@@ -114,7 +109,6 @@ export const projects = [
     year: '2025',
     image: '/assets/posters/featured/protected%20content.webp',
     fullImage: '/assets/posters/featured/protected%20content-full.webp',
-    originalImage: '/assets/posters/featured/protected%20content.png',
     aspect: '3/4',
     featured: false,
     alt: 'protected content - Poster design (2025)'
@@ -845,9 +839,6 @@ export function openLightbox(project) {
       const fullSource = project.fullImage || project.image || project.thumbnail || '';
       img.src = fullSource;
       img.alt = project.alt || project.title || 'Project poster';
-      if (project.originalImage) {
-        img.dataset.original = project.originalImage;
-      }
     }
     lightbox.setAttribute('aria-label', `Poster viewer: ${project.title || 'Poster'}`);
   }
@@ -1113,19 +1104,25 @@ export function setupContactForm() {
       email: document.getElementById('email').value.trim(),
       subject: document.getElementById('subject').value.trim(),
       budget: document.getElementById('budget').value,
-      message: document.getElementById('message').value.trim(),
-      submittedAt: new Date().toISOString()
+      message: document.getElementById('message').value.trim()
     };
-
-    console.log('Inquiry submitted:', data);
+    const emailBody = [
+      `Name: ${data.name}`,
+      `Email: ${data.email}`,
+      `Budget: ${data.budget}`,
+      '',
+      'Project details:',
+      data.message
+    ].join('\n');
+    const mailtoUrl = `mailto:markbryanlucas05@gmail.com?subject=${encodeURIComponent(`Portfolio inquiry: ${data.subject}`)}&body=${encodeURIComponent(emailBody)}`;
 
     const status = document.getElementById('form-status');
     if (status) {
       status.className = 'form-status-alert is-success';
-      status.textContent = 'Thank you! Your inquiry has been received.';
+      status.textContent = 'Your email app should open with your inquiry ready to send.';
     }
 
-    form.reset();
+    window.location.href = mailtoUrl;
   });
 }
 
@@ -1219,11 +1216,11 @@ export function setupHeroMonogram() {
     { src: '/assets/posters/featured/captcha.webp', alt: 'Mark Bryan - Captcha poster design' }
   ];
 
-  // Preload all poster images immediately to guarantee zero flash or empty frames
-  posters.forEach((p, idx) => {
+  // Preload and decode all poster images immediately to guarantee zero flash or empty frames
+  posters.forEach((p) => {
     const preloader = new Image();
     preloader.src = p.src;
-    if (idx === 0 && typeof preloader.decode === 'function') {
+    if (typeof preloader.decode === 'function') {
       preloader.decode().catch(() => {});
     }
   });
@@ -1810,14 +1807,14 @@ export async function triggerHomeIntroSequence() {
       imageBox.classList.add('is-animated');
     }
 
-    // Once 3D flip entrance finishes and settles (1100ms transition + 300ms buffer = 1400ms),
+    // Once 3D flip entrance finishes and settles (1500ms transition + 200ms buffer = 1700ms),
     // mark intro finished and start the normal 1500ms hero rotation
     setTimeout(() => {
       isIntroRunning = false;
       if (currentRoute === 'home') {
         startHeroCycle();
       }
-    }, 1400);
+    }, 1700);
   }, 800);
 }
 
