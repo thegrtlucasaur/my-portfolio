@@ -115,12 +115,29 @@ export const projects = [
   }
 ];
 
-// Configurable Featured Project Selection on Home
+// Configurable Featured Project Selection on Home (4 projects)
 // Can easily be changed at any time by updating this array
 export const featuredProjectIds = ['video-01', 'video-02', 'oh-yeah', 'undressed'];
 
+// Curated Project Selection on Work Gallery (6 projects)
+// Represents the strongest balanced showcase of multimedia direction, videography, and graphic poster design
+export const curatedWorkProjectIds = [
+  'video-01',
+  'video-02',
+  'oh-yeah',
+  'multo',
+  'undressed',
+  'captcha'
+];
+
 export function getFeaturedProjects() {
   return featuredProjectIds
+    .map(id => projects.find(p => p.id === id))
+    .filter(Boolean);
+}
+
+export function getCuratedWorkProjects() {
+  return curatedWorkProjectIds
     .map(id => projects.find(p => p.id === id))
     .filter(Boolean);
 }
@@ -445,7 +462,50 @@ export function renderFeaturedWork() {
 }
 
 /**
- * Renders the full curated Work poster gallery
+ * Updates dynamic project count badges across navigation, mobile drawer, and view headers
+ */
+export function updateProjectCounters() {
+  const curatedCount = getCuratedWorkProjects().length;
+  const totalCount = projects.length;
+
+  // Desktop navigation counters
+  const desktopWorkCount = document.querySelector('.nav-link[data-route="work"] .nav-link-count');
+  if (desktopWorkCount) {
+    desktopWorkCount.textContent = `(${curatedCount})`;
+    desktopWorkCount.setAttribute('aria-label', `${curatedCount} projects`);
+  }
+
+  const desktopArchiveCount = document.querySelector('.nav-link[data-route="archive"] .nav-link-count');
+  if (desktopArchiveCount) {
+    desktopArchiveCount.textContent = `(${totalCount})`;
+    desktopArchiveCount.setAttribute('aria-label', `${totalCount} archived projects`);
+  }
+
+  // Mobile drawer navigation counters
+  const mobileWorkCount = document.querySelector('.burger-link[data-route="work"] .burger-link-count');
+  if (mobileWorkCount) {
+    mobileWorkCount.textContent = `(${curatedCount})`;
+  }
+
+  const mobileArchiveCount = document.querySelector('.burger-link[data-route="archive"] .burger-link-count');
+  if (mobileArchiveCount) {
+    mobileArchiveCount.textContent = `(${totalCount})`;
+  }
+
+  // Page view header counters
+  const workHeaderCount = document.getElementById('workCountHeader');
+  if (workHeaderCount) {
+    workHeaderCount.textContent = `(${curatedCount})`;
+  }
+
+  const archiveHeaderCount = document.getElementById('archiveCountHeader');
+  if (archiveHeaderCount) {
+    archiveHeaderCount.textContent = `(${totalCount})`;
+  }
+}
+
+/**
+ * Renders the curated Work poster gallery
  * Preserves original poster aspect ratio; subtle scale(1.02) hover without cropping
  */
 export function renderWorkPage() {
@@ -453,8 +513,9 @@ export function renderWorkPage() {
   if (!container) return;
 
   container.innerHTML = '';
+  const curatedProjects = getCuratedWorkProjects();
 
-  projects.forEach((item, index) => {
+  curatedProjects.forEach((item, index) => {
     const card = document.createElement('article');
     card.className = 'project-card';
     card.style.setProperty('--stagger-delay', `${(index % 2) * 0.08}s`);
@@ -799,6 +860,33 @@ export function setupScrollAnimations() {
 
 let lastActiveElement = null;
 
+function trapFocusInContainer(e, container) {
+  if (e.key !== 'Tab' || !container) return;
+  const focusables = Array.from(
+    container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), iframe')
+  ).filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
+
+  if (focusables.length === 0) {
+    e.preventDefault();
+    return;
+  }
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+
+  if (e.shiftKey) {
+    if (document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    }
+  } else {
+    if (document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+}
+
 export function openLightbox(project) {
   const lightbox = document.getElementById('projectLightbox');
   const img = document.getElementById('lightboxImg');
@@ -821,7 +909,7 @@ export function openLightbox(project) {
         <iframe 
           class="lightbox-video-iframe"
           src="${embedSrc}?autoplay=1&rel=0" 
-          title="${project.title || 'Video'}"
+          title="${project.title || 'Video production'}"
           frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
           allowfullscreen
@@ -849,6 +937,14 @@ export function openLightbox(project) {
   lightbox.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 
+  // Make background inert for assistive technologies
+  const mainContent = document.getElementById('main-content');
+  const siteHeader = document.querySelector('.site-header');
+  const siteFooter = document.getElementById('siteFooter');
+  if (mainContent) mainContent.setAttribute('aria-hidden', 'true');
+  if (siteHeader) siteHeader.setAttribute('aria-hidden', 'true');
+  if (siteFooter) siteFooter.setAttribute('aria-hidden', 'true');
+
   if (closeBtn) {
     requestAnimationFrame(() => closeBtn.focus());
   }
@@ -874,6 +970,14 @@ export function closeLightbox() {
   lightbox.classList.remove('is-open');
   lightbox.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
+
+  // Restore background accessibility landmarks
+  const mainContent = document.getElementById('main-content');
+  const siteHeader = document.querySelector('.site-header');
+  const siteFooter = document.getElementById('siteFooter');
+  if (mainContent) mainContent.removeAttribute('aria-hidden');
+  if (siteHeader) siteHeader.removeAttribute('aria-hidden');
+  if (siteFooter) siteFooter.removeAttribute('aria-hidden');
 
   setTimeout(() => {
     if (!lightbox.classList.contains('is-open')) {
@@ -920,6 +1024,10 @@ export function setupLightbox() {
     }
   });
 
+  lightbox.addEventListener('keydown', (e) => {
+    trapFocusInContainer(e, lightbox);
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
       closeLightbox();
@@ -931,9 +1039,12 @@ export function setupLightbox() {
 // 7. MOBILE DRAWER NAVIGATION
 // ============================================================================
 
+let lastDrawerTriggerElement = null;
+
 export function toggleMobileDrawer() {
   const drawer = document.getElementById('mobileDrawer');
   const toggleBtn = document.getElementById('navToggleMobile');
+  const closeBtn = document.getElementById('mobileDrawerCloseBtn');
 
   if (!drawer || !toggleBtn) return;
 
@@ -942,12 +1053,22 @@ export function toggleMobileDrawer() {
   if (isOpen) {
     closeMobileDrawer();
   } else {
+    lastDrawerTriggerElement = document.activeElement;
     drawer.style.display = 'block';
     void drawer.offsetWidth;
     drawer.classList.add('is-open');
+    drawer.setAttribute('aria-hidden', 'false');
     toggleBtn.classList.add('is-open');
     toggleBtn.setAttribute('aria-expanded', 'true');
     document.body.classList.add('menu-open');
+
+    // Make main content inert while drawer is open
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) mainContent.setAttribute('aria-hidden', 'true');
+
+    if (closeBtn) {
+      requestAnimationFrame(() => closeBtn.focus());
+    }
   }
 }
 
@@ -958,7 +1079,11 @@ export function closeMobileDrawer() {
   if (!drawer) return;
 
   drawer.classList.remove('is-open');
+  drawer.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('menu-open');
+
+  const mainContent = document.getElementById('main-content');
+  if (mainContent) mainContent.removeAttribute('aria-hidden');
 
   if (toggleBtn) {
     toggleBtn.classList.remove('is-open');
@@ -970,6 +1095,11 @@ export function closeMobileDrawer() {
       drawer.style.display = 'none';
     }
   }, 500);
+
+  if (lastDrawerTriggerElement && typeof lastDrawerTriggerElement.focus === 'function') {
+    lastDrawerTriggerElement.focus();
+    lastDrawerTriggerElement = null;
+  }
 }
 
 export function setupMobileNav() {
@@ -983,6 +1113,7 @@ export function setupMobileNav() {
   // Guarantee strict initial closed state
   drawer.classList.remove('is-open');
   drawer.style.display = 'none';
+  drawer.setAttribute('aria-hidden', 'true');
 
   if (toggleBtn) {
     toggleBtn.addEventListener('click', toggleMobileDrawer);
@@ -1002,14 +1133,17 @@ export function setupMobileNav() {
     }, { passive: false });
   }
 
+  // Trap focus inside mobile navigation drawer when open
+  drawer.addEventListener('keydown', (e) => {
+    trapFocusInContainer(e, drawer);
+  });
+
   // Ensure any click on links inside mobile drawer closes it
-  if (drawer) {
-    drawer.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        closeMobileDrawer();
-      });
+  drawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      closeMobileDrawer();
     });
-  }
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.body.classList.contains('menu-open')) {
@@ -1072,6 +1206,7 @@ export function setupContactForm() {
     el.addEventListener(evt, () => {
       const err = document.getElementById(errorId);
       if (err) err.textContent = '';
+      el.removeAttribute('aria-invalid');
     });
   });
 
@@ -1087,9 +1222,11 @@ export function setupContactForm() {
 
       if (!validate(el.value)) {
         hasError = true;
+        el.setAttribute('aria-invalid', 'true');
         if (err) err.textContent = msg;
         if (!firstErr) firstErr = el;
       } else {
+        el.removeAttribute('aria-invalid');
         if (err) err.textContent = '';
       }
     });
@@ -1119,7 +1256,7 @@ export function setupContactForm() {
     const status = document.getElementById('form-status');
     if (status) {
       status.className = 'form-status-alert is-success';
-      status.textContent = 'Your email app should open with your inquiry ready to send.';
+      status.textContent = 'Your email application should open with your inquiry ready to send.';
     }
 
     window.location.href = mailtoUrl;
@@ -1674,6 +1811,7 @@ export async function init() {
   renderFeaturedWork();
   renderWorkPage();
   renderArchivePage();
+  updateProjectCounters();
 
   setupRouterListeners();
   setupArchiveHover();

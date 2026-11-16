@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Portfolio of Mark Bryan S. Lucas — Multimedia designer, video editor, and IT specialist creating posters, visual content, and digital experiences based in Camarines Sur, Philippines.">
+  <meta name="description" content="Portfolio of Mark Bryan S. Lucas — Multimedia designer, video editor, and IT specialist creating posters, visual content, and digital experiences based in Albay, Philippines.">
   <title>MARK BRYAN S. LUCAS — Multimedia Designer & Video Editor</title>
   
   <!-- Fallback if JavaScript is disabled -->
@@ -20,8 +20,8 @@
   <link rel="preload" href="/fonts/neue-montreal/neuemontreal-regular.woff2" as="font" type="font/woff2" crossorigin>
   
   <!-- Critical Image Preloads -->
-  <link rel="preload" href="/assets/posters/featured/oh-yeah-steve-lacy.webp" as="image">
-  <link rel="preload" href="/assets/about/profile.jpg" as="image">
+  <link rel="preload" href="/assets/posters/featured/oh-yeah-steve-lacy.webp" as="image" type="image/webp">
+  <link rel="preload" href="/assets/about/profile.webp" as="image" type="image/webp">
   
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/src/css/style.css">
@@ -66,7 +66,7 @@
           <a href="/work" class="nav-link anchor" data-route="work">
             <span class="nav-link-inner nav-in" style="--stagger-delay: 0.05s;">
               <span class="nav-link-label link-line">Work</span>
-              <span class="nav-link-count" aria-label="8 projects">(8)</span>
+              <span class="nav-link-count" aria-label="6 projects">(6)</span>
             </span>
           </a>
           <a href="/archive" class="nav-link anchor" data-route="archive">
@@ -113,7 +113,7 @@
       <div class="burger-links">
         <span class="bracket-tag mobile-drawer-tag">[ Navigation ]</span>
         <a class="burger-link anchor" href="/work" data-route="work">
-          <span class="burger-link-text">Work <span class="burger-link-count">(8)</span></span>
+          <span class="burger-link-text">Work <span class="burger-link-count">(6)</span></span>
         </a>
         <a class="burger-link anchor" href="/archive" data-route="archive">
           <span class="burger-link-text">Archive <span class="burger-link-count">(8)</span></span>
@@ -127,7 +127,7 @@
       </div>
 
       <div class="burger-footer">
-        <span class="burger-footer-location">[ Camarines Sur, Philippines ]</span>
+        <span class="burger-footer-location">[ Albay, Philippines ]</span>
       </div>
     </div>
 
@@ -277,7 +277,7 @@
           <div class="work-hero-title-wrapper">
             <h1 class="work-hero-title">
               <span>Work</span>
-              <span class="work-hero-count" id="workCountHeader">(8)</span>
+              <span class="work-hero-count" id="workCountHeader">(6)</span>
             </h1>
           </div>
           <div class="border"></div>
@@ -327,12 +327,12 @@
           <div class="about-photo-box" id="aboutImageSticky">
             <div class="about-photo-wrapper">
               <img
-                src="/assets/about/profile.jpg"
+                src="/assets/about/profile.webp"
                 alt="Mark Bryan Lucas - Profile"
                 class="about-photo"
                 id="aboutProfileImg"
-                width="6048"
-                height="8064"
+                width="1200"
+                height="1600"
                 loading="eager"
                 decoding="async"
                 style="transform: scale(1.00); transform-origin: center center;"
@@ -466,7 +466,7 @@
                 </div>
                 <div class="direct-contact-item">
                   <span class="direct-contact-label">[ Location ]</span>
-                  <span class="direct-contact-val">Camarines Sur, Philippines</span>
+                  <span class="direct-contact-val">Albay, Philippines</span>
                 </div>
               </div>
             </div>
@@ -476,25 +476,25 @@
               <form id="contact-form" class="editorial-form" novalidate>
                 <div class="form-group">
                   <label for="name" class="form-label">[ Name ]</label>
-                  <input type="text" id="name" name="name" class="form-input" required placeholder="What should I call you?" autocomplete="name" />
+                  <input type="text" id="name" name="name" class="form-input" required placeholder="What should I call you?" autocomplete="name" aria-describedby="name-error" />
                   <span class="form-error" id="name-error" aria-live="polite"></span>
                 </div>
 
                 <div class="form-group">
                   <label for="email" class="form-label">[ Email ]</label>
-                  <input type="email" id="email" name="email" class="form-input" required placeholder="name@example.com" autocomplete="email" />
+                  <input type="email" id="email" name="email" class="form-input" required placeholder="name@example.com" autocomplete="email" aria-describedby="email-error" />
                   <span class="form-error" id="email-error" aria-live="polite"></span>
                 </div>
 
                 <div class="form-group">
                   <label for="subject" class="form-label">[ Subject ]</label>
-                  <input type="text" id="subject" name="subject" class="form-input" required placeholder="Project inquiry / collaboration" />
+                  <input type="text" id="subject" name="subject" class="form-input" required placeholder="Project inquiry / collaboration" aria-describedby="subject-error" />
                   <span class="form-error" id="subject-error" aria-live="polite"></span>
                 </div>
 
                 <div class="form-group">
                   <label for="budget" class="form-label">[ Budget Tier ]</label>
-                  <select id="budget" name="budget" class="form-select" required>
+                  <select id="budget" name="budget" class="form-select" required aria-describedby="budget-error">
                     <option value="" disabled selected>Select an estimated budget</option>
                     <option value="₱1,000 – ₱3,000">₱1,000 – ₱3,000</option>
                     <option value="₱3,000 – ₱5,000">₱3,000 – ₱5,000</option>
@@ -508,7 +508,7 @@
 
                 <div class="form-group">
                   <label for="message" class="form-label">[ Project Details ]</label>
-                  <textarea id="message" name="message" class="form-textarea" rows="4" required placeholder="Project description, scope, and timeline..."></textarea>
+                  <textarea id="message" name="message" class="form-textarea" rows="4" required placeholder="Project description, scope, and timeline..." aria-describedby="message-error"></textarea>
                   <span class="form-error" id="message-error" aria-live="polite"></span>
                 </div>
 
